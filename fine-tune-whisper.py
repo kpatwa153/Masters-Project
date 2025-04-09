@@ -5,11 +5,9 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Union
 
 import evaluate
-import librosa
 import numpy as np
 import pandas as pd
 import torch
-import torchaudio
 from datasets import Audio, Dataset
 from pydub import AudioSegment
 from sklearn.model_selection import train_test_split
@@ -27,11 +25,11 @@ MAX_DURATION = 30  # Whisper handles max 30s of audio well
 
 # defining the paths for the data
 # Paths
-dataset_path = "audio_recordings2"
-audio_path = os.path.join(dataset_path, "Audio_ecordings")
+dataset_path = "../audio_recordings2"
+audio_path = os.path.join(dataset_path, "Audio_Recordings")
 transcript_path = os.path.join(dataset_path, "transcripts")
-audio_folder = "audio_recordings/Audio_recordings"
-transcript_folder = "audio_recordings/Clean_Transcripts"
+audio_folder = "../audio_recordings/Audio_Recordings"
+transcript_folder = "../audio_recordings/Clean_Transcripts"
 
 
 # Combining the audio and transcript files
