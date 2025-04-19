@@ -1,3 +1,6 @@
+# Windows - ffmpeg installed and added to path
+# pip install jiwer to use `wer` evaluation metrics
+ 
 # Importing the required libraries
 import os
 import re
@@ -25,7 +28,7 @@ MAX_DURATION = 30  # Whisper handles max 30s of audio well
 
 # defining the paths for the data
 # Paths
-dataset_path = "../audio_recordings2"
+dataset_path = "../audio_recordings"
 audio_path = os.path.join(dataset_path, "Audio_Recordings")
 transcript_path = os.path.join(dataset_path, "transcripts")
 audio_folder = "../audio_recordings/Audio_Recordings"
@@ -294,13 +297,13 @@ def compute_metrics(pred):
 data = load_audio_transcripts(audio_folder, transcript_folder)
 df = pd.DataFrame(data)
 df["text"] = df["text"].apply(clean_text)  # Cleaning the text data
-
+print("text cleaned")
 new_audio_paths, new_transcripts = split_and_process_audio(
     df
 )  # Splitting the audio files
 # Creating a new DataFrame with segmented audio files
 df_split = pd.DataFrame({"audio": new_audio_paths, "text": new_transcripts})
-
+print("audio files segmented")
 # Now splitting into train/test datasets
 np.random.seed(42)
 train_df, test_df = train_test_split(df_split, test_size=0.2)
@@ -311,7 +314,7 @@ test_dataset = Dataset.from_pandas(test_df)
 # Casting the audio column to Audio type (with sampling rate 16kHz)
 train_dataset = train_dataset.cast_column("audio", Audio(sampling_rate=16000))
 test_dataset = test_dataset.cast_column("audio", Audio(sampling_rate=16000))
-
+print("Train-Test Split Completed")
 # Loading the feature extractor, tokenizer, and processor models
 feature_extractor = WhisperFeatureExtractor.from_pretrained(
     "openai/whisper-base"
@@ -326,7 +329,7 @@ processor = WhisperProcessor.from_pretrained(
 # Preprocessing the training and testing datasets
 train_dataset2 = train_dataset.map(prepare_dataset, num_proc=1)
 test_dataset2 = test_dataset.map(prepare_dataset, num_proc=1)
-
+print("split-2")
 data_collator = DataCollatorSpeechSeq2SeqWithPadding(
     processor=processor
 )  # Creating the data collator
@@ -344,7 +347,7 @@ model.config.forced_decoder_ids = (
 model.config.suppress_tokens = (
     []
 )  # Disable token suppression if causing issues
-
+print("model loaded")
 training_args = Seq2SeqTrainingArguments(
     output_dir="./whisper-small-eng-v2",  # output directory
     per_device_train_batch_size=4,  # batch size per device during training
@@ -378,8 +381,8 @@ trainer = Seq2SeqTrainer(
     compute_metrics=compute_metrics,
     tokenizer=processor.feature_extractor,
 )  # Creating the trainer
-
+print("Training the model......")
 trainer.train()  # Training the model
-
-model.save_pretrained("./whisper-small-eng")  # Saving the model
-processor.save_pretrained("./whisper-small-eng")  # Saving the processor
+print("Model Saved")
+model.save_pretrained("./whisper-small-eng-v2")  # Saving the model
+processor.save_pretrained("./whisper-small-eng-v2")  # Saving the processor
