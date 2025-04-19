@@ -9,24 +9,24 @@ Key Functionalities:
 --------------------
 
 1. **Text Retrieval**
-   - `retrieve_text(text_store)`:  
+   - `retrieve_text(text_store)`:
      Converts a LangChain-based Qdrant text store into a retriever that uses similarity scoring with a defined threshold.
 
 2. **Image Retrieval**
-   - `image_retrieval(...)`:  
+   - `image_retrieval(...)`:
      Embeds a text query using CLIP, searches a Qdrant image collection, and returns image paths above a score threshold.
      Also displays matched images using IPython's image viewer.
 
 3. **Table Retrieval**
-   - `table_retrieve(...)`:  
+   - `table_retrieve(...)`:
      Converts a Qdrant collection storing table embeddings into a retriever, using the `"table_text"` payload for matching.
 
 4. **Merged Retrieval**
-   - `reranking(query, text_retriever, table_retriever)`:  
+   - `reranking(query, text_retriever, table_retriever)`:
      Merges results from both text and table retrievers using LangChain's `MergerRetriever` and concatenates the content.
 
 5. **Response Generation**
-   - `generate_response(...)`:  
+   - `generate_response(...)`:
      Builds a multimodal prompt including retrieved content and visual input (if any), then passes it to a Qwen2-VL model.
      The result is a coherent, context-aware summary or answer.
 
@@ -54,22 +54,39 @@ Example Workflow:
 
 """
 
-
-# Third-Party Library Imports
-from PIL import Image
-import torch
 import IPython.display as display
+import torch
+from langchain.prompts import PromptTemplate
+from langchain.retrievers import MergerRetriever
 
 # LangChain and Vector Store Libraries
 from langchain_community.vectorstores import Qdrant
-from langchain.retrievers import MergerRetriever
+
+# Third-Party Library Imports
+from PIL import Image
 from qwen_vl_utils import process_vision_info
-from langchain.prompts import PromptTemplate
 
 
 def prompt():
+    """
+    Creates a prompt template for generating answers to medical queries.
+
+    The prompt is designed for a medical assistant that provides concise, accurate,
+    and easy-to-understand answers based on a given context. It ensures that no
+    hallucinated or invented information is added to the response. If no answer is
+    found in the context, the response will explicitly state: `No Relevant Information found`.
+
+    The prompt also allows referring to visual information (image tokens) if relevant.
+
+    Returns:
+        PromptTemplate: A LangChain-compatible prompt template with placeholders:
+            - query (str): The user's medical query.
+            - output (str): Retrieved textual context.
+            - num_images (int): Number of relevant images provided.
+            - image_tokens (str): Visual tokens or captions associated with images.
+    """
     prompt_template = PromptTemplate(
-        input_variables=["query", "output", "num_images","image_tokens"],
+        input_variables=["query", "output", "num_images", "image_tokens"],
         template=(
             """You are a medical professional. Given the following medical query and its context, 
             craft a clear, well written and easy to understand Answer by extracting relevant information from the context.\n\n
@@ -79,30 +96,58 @@ def prompt():
             {num_images} image(s) are also provided. Refer them, only if they are relevant\n\n
             "{image_tokens}\n\n"
             Answer:"""
-            ),
+        ),
     )
     return prompt_template
 
+
 def pdf_summarization():
+    """
+    Creates a prompt template for summarizing the content of a PDF document.
+
+    The summary is strictly based on the content extracted from the PDF, including
+    text and images. It avoids speculation or fabrication, ensuring that the output
+    remains factual and grounded in the source material.
+
+    Returns:
+        PromptTemplate: A LangChain-compatible prompt template with placeholders:
+            - query (str): User-provided context or focus area for summarization.
+            - output (str): Extracted text content from the PDF.
+            - num_images (int): Number of images extracted from the PDF.
+            - image_tokens (str): Visual tokens or descriptions associated with images.
+    """
     pdf_summarize_template = PromptTemplate(
-    input_variables=["query", "output", "num_images", "image_tokens"],
-    template=(
-        "Summarize the content of the PDF document"
-        "Do not add or invent any information of fact of your own.\n\n"
-        "Query:\n{query}\n\n"
-        "content:\n{output}\n\n"
-        "{num_images} image(s) attached:\n"
-        "{image_tokens}\n\n"
-        "Answer:"
+        input_variables=["query", "output", "num_images", "image_tokens"],
+        template=(
+            "Summarize the content of the PDF document"
+            "Do not add or invent any information of fact of your own.\n\n"
+            "Query:\n{query}\n\n"
+            "content:\n{output}\n\n"
+            "{num_images} image(s) attached:\n"
+            "{image_tokens}\n\n"
+            "Answer:"
         ),
     )
     return pdf_summarize_template
 
+
 def audio_summarization():
+    """
+    Creates a prompt template for summarizing medical audio transcriptions.
+
+    This prompt guides a language model to generate a single, cohesive, logically
+    organized summary of the entire transcription. It avoids duplication and ensures
+    clarity and professionalism in the medical context.
+
+    Returns:
+        PromptTemplate: A LangChain-compatible prompt template with placeholders:
+            - query (str): A guiding question or focus area.
+            - output (str): Full transcription text from the audio.
+    """
     audio_summarize_template = PromptTemplate(
-    input_variables=["query", "output"],
-    template=(
-        """You are a professional medical summarizer. Summarize the content of an audio transcriptions\n\n
+        input_variables=["query", "output"],
+        template=(
+            """You are a professional medical summarizer. Summarize the content of an audio transcriptions\n\n
         Write **one** cohesive summary of the **entire document** \n\n
         removing any duplication, and organizing it logically.\n\n
         Query:\n{query}\n\n
@@ -112,8 +157,13 @@ def audio_summarization():
     )
     return audio_summarize_template
 
+
 def retrieve_text(text_store):
-    return text_store.as_retriever(search_type="mmr", search_kwargs={"k": 8, "lambda_mult":0.6},)
+    return text_store.as_retriever(
+        search_type="mmr",
+        search_kwargs={"k": 8, "lambda_mult": 0.6},
+    )
+
 
 def image_retrieval(
     client,
@@ -165,25 +215,51 @@ def image_retrieval(
             display.display(img)
     return images
 
+
 def table_retrieve(client, collection_name, text_embedding_model):
     return Qdrant(
-    client=client,
-    collection_name=collection_name,
-    embeddings=text_embedding_model,
-    content_payload_key="table_text",
+        client=client,
+        collection_name=collection_name,
+        embeddings=text_embedding_model,
+        content_payload_key="table_text",
     ).as_retriever(
         search_type="mmr",
-        search_kwargs={"k": 6,"lambda_mult":0.6},
+        search_kwargs={"k": 6, "lambda_mult": 0.6},
     )
 
 
 def reranking(query, text_retriever, table_retriever):
-    merge_retriever = MergerRetriever(retrievers=[text_retriever, table_retriever])
+    """
+    Combines results from text and table retrievers for unified context generation.
+
+    This function uses MergerRetriever to merge relevant documents from both
+    unstructured (text) and structured (table) retrievers. The page content from
+    each retrieved document is concatenated into a single string.
+
+    Args:
+        query (str): The user query for retrieval.
+        text_retriever: Retriever handling unstructured text content.
+        table_retriever: Retriever handling tabular/structured content.
+
+    Returns:
+        str: Merged content string from both retrievers.
+    """
+    merge_retriever = MergerRetriever(
+        retrievers=[text_retriever, table_retriever]
+    )
     retrieved_docs = merge_retriever.invoke(query)
     return " ".join([doc.page_content for doc in retrieved_docs])
 
 
-def generate_response(qwen_processor, qwen_model, DEVICE, prompt_template, query, output_text, image_path=None):
+def generate_response(
+    qwen_processor,
+    qwen_model,
+    DEVICE,
+    prompt_template,
+    query,
+    output_text,
+    image_path=None,
+):
     """
     Generate a response using the Qwen2VL model with text and image input.
 
@@ -206,7 +282,7 @@ def generate_response(qwen_processor, qwen_model, DEVICE, prompt_template, query
         image_tokens = "\n".join(["<|image|>"] * len(images))
     else:
         images = None
-    
+
     prompt = prompt_template.format(
         query=query,
         output=output_text,
@@ -214,20 +290,20 @@ def generate_response(qwen_processor, qwen_model, DEVICE, prompt_template, query
         image_tokens=image_tokens,
     )
     conversation = [
-    {"role": "user", "content": prompt},
+        {"role": "user", "content": prompt},
     ]
     image_inputs, _ = process_vision_info(conversation)
     # Prepare the inputs for the model
     inputs = qwen_processor(
-        text=prompt,
-        images=image_inputs,
-        return_tensors="pt"
+        text=prompt, images=image_inputs, return_tensors="pt"
     ).to(DEVICE)
 
     # Generate the output from the model
     with torch.no_grad():
-        generated_ids = qwen_model.generate(**inputs, top_k = 1, temperature = 0.5, max_new_tokens=512)
- 
+        generated_ids = qwen_model.generate(
+            **inputs, top_k=1, temperature=0.5, max_new_tokens=512
+        )
+
     # Decode the generated tokens to text
     response = qwen_processor.decode(
         generated_ids[0], skip_special_tokens=True

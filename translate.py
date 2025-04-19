@@ -178,23 +178,3 @@ def translate_pdf(input_pdf: str, output_pdf: str, language: str, translator):
     resized_doc.close()
     os.remove(input_pdf)  # Remove the resized PDF
     return output_pdf
-
-
-# language = str(input("Enter the language you want to translate to: "))
-# languages = GoogleTranslator().get_supported_languages(as_dict=True)
-# language_code = languages.get(language.lower())
-# # Configure the translator (English to selected language)
-# translator = GoogleTranslator(source="auto", target=language_code)
-
-
-# path = "pdf.pdf"  # Path to the PDF file
-# try:
-#     doc = pymupdf.open("pdf.pdf")  # Load the PDF file
-#     resized = resize_pdf(doc, "pdf_resized.pdf")  # Resize the PDF
-#     print("PDF Resized")
-#     translate_pdf(
-#         resized, f"pdf-{language}.pdf", language, translator
-#     )  # Translate the PDF
-#     print("pdf translated")
-# except Exception:
-#     pass

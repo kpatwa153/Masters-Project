@@ -48,10 +48,10 @@ Model Notes:
 
 """
 
+import os
 
 import torch
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
-import os
 
 # Load fine-tuned model
 model_path = os.path.abspath("../whisper-small-eng")
