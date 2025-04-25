@@ -1,3 +1,51 @@
+"""
+Embeddings Utility Module for Text, Tables, and Images
+
+This module provides helper functions for preparing and generating embeddings
+from text, table data, and images—typically used in document intelligence,
+semantic search, or retrieval-augmented generation (RAG) pipelines.
+
+Key Functionalities:
+--------------------
+1. **Text Chunking**  
+   - `split_text(text, chunk_size=512, chunk_overlap=50)`:  
+     Splits raw text into overlapping chunks using LangChain's RecursiveCharacterTextSplitter,
+     preserving context across chunks for better embedding and retrieval.
+
+2. **Image Embedding Generation**  
+   - `image_generate_embeddings(image_paths, clip_processor, clip_model)`:  
+     Generates image embeddings using the CLIP model from Hugging Face. Also returns raw pixel data
+     and image dimensions for potential auxiliary tasks like rendering or reconstruction.
+
+3. **Table Text Formatting & Embedding**  
+   - `format_table_for_embedding(table_data)`:  
+     Converts structured table data (usually extracted from PDFs) into a readable string format.
+   - `generate_table_embeddings(content, text_embedding_model)`:  
+     Converts all tables in a document into embeddings using a text embedding model.
+     Returns a list of dictionaries including the table ID, formatted table string, and its embedding vector.
+
+Expected Use Cases:
+-------------------
+- Embedding-based document search (RAG)
+- Vision-language similarity
+- Table understanding and semantic retrieval
+- Preparing multi-modal content for downstream models
+
+Dependencies:
+-------------
+- PyTorch (for embedding generation)
+- PIL (for image processing)
+- LangChain (for text splitting)
+- Hugging Face Transformers (for CLIP and embedding models)
+
+Output Formats:
+---------------
+- Text chunks: `List[str]`
+- Image embeddings: `List[List[float]]`
+- Table embeddings: `List[Dict]` with keys `table_id`, `text`, and `embedding`
+
+"""
+
 import torch
 
 # LangChain and Vector Store Libraries
@@ -5,7 +53,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from PIL import Image
 
 
-def split_text(text, chunk_size=512, chunk_overlap=50):
+def split_text(text, chunk_size=512, chunk_overlap=100):
     """
     Splits the input text into smaller overlapping chunks for efficient processing.
 

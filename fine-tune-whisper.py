@@ -1,3 +1,45 @@
+"""
+This module handles the preprocessing, training, and evaluation of a speech-to-text model using the Whisper architecture from Hugging Face.
+
+The module includes the following steps:
+1. **Loading and processing data**: Loads audio recordings and corresponding transcripts, cleans the text, and splits the audio files into smaller chunks to handle long recordings.
+2. **Feature extraction and tokenization**: Extracts audio features (log-Mel spectrogram) and tokenizes the corresponding text for model training.
+3. **Model preparation**: Loads the Whisper model and tokenizer, and sets up training configurations for fine-tuning.
+4. **Training**: Uses a custom `Seq2SeqTrainer` with `WhisperForConditionalGeneration` for training the model on the preprocessed audio data.
+5. **Evaluation**: Computes the Word Error Rate (WER) as the evaluation metric, which is used to assess the performance of the trained model.
+
+Key functions:
+- `load_audio_transcripts()`: Loads the audio and transcript files from specified directories.
+- `clean_text()`: Preprocesses and cleans the text data (e.g., removing special characters and extra spaces).
+- `split_and_process_audio()`: Splits long audio files into smaller chunks (with a maximum duration per chunk) while retaining the original transcripts.
+- `prepare_dataset()`: Processes audio samples to extract features and tokenizes the corresponding text labels for training.
+- `DataCollatorSpeechSeq2SeqWithPadding`: Custom data collator that applies padding to both input audio features and text labels, and ensures proper handling of padding tokens in the loss computation.
+- `compute_metrics()`: Computes the Word Error Rate (WER) for model evaluation by comparing predicted and reference transcripts.
+
+Dependencies:
+- `transformers`: For loading pre-trained models and tokenizers.
+- `datasets`: For dataset management and preprocessing.
+- `evaluate`: For evaluating the model's performance using WER.
+- `pydub`: For audio processing (splitting audio files into chunks).
+- `torch`: For handling tensor operations and training with PyTorch.
+- `sklearn`: For splitting the dataset into training and test sets.
+
+Configuration:
+- The Whisper model is fine-tuned with a max duration of 30 seconds per audio chunk.
+- The dataset is split into training and testing sets using an 80/20 split.
+- The model is trained with a learning rate of 1e-5, a batch size of 4, and 64 gradient accumulation steps.
+- WER is used as the evaluation metric, and model checkpoints are saved based on WER improvement.
+
+The model and processor are saved after training for later inference and use.
+
+Usage:
+1. Place your audio recordings in the specified `audio_folder` and transcripts in the `transcript_folder`.
+2. Run the module to preprocess the data, split audio, tokenize text, and train the Whisper model.
+3. The trained model will be saved in the `whisper-small-eng` directory for later use.
+"""
+
+# pip install jiwer to use `wer` evaluation metrics
+
 # Importing the required libraries
 import os
 import re
@@ -25,7 +67,7 @@ MAX_DURATION = 30  # Whisper handles max 30s of audio well
 
 # defining the paths for the data
 # Paths
-dataset_path = "../audio_recordings2"
+dataset_path = "../audio_recordings"
 audio_path = os.path.join(dataset_path, "Audio_Recordings")
 transcript_path = os.path.join(dataset_path, "transcripts")
 audio_folder = "../audio_recordings/Audio_Recordings"
@@ -294,13 +336,13 @@ def compute_metrics(pred):
 data = load_audio_transcripts(audio_folder, transcript_folder)
 df = pd.DataFrame(data)
 df["text"] = df["text"].apply(clean_text)  # Cleaning the text data
-
+print("text cleaned")
 new_audio_paths, new_transcripts = split_and_process_audio(
     df
 )  # Splitting the audio files
 # Creating a new DataFrame with segmented audio files
 df_split = pd.DataFrame({"audio": new_audio_paths, "text": new_transcripts})
-
+print("audio files segmented")
 # Now splitting into train/test datasets
 np.random.seed(42)
 train_df, test_df = train_test_split(df_split, test_size=0.2)
@@ -311,7 +353,7 @@ test_dataset = Dataset.from_pandas(test_df)
 # Casting the audio column to Audio type (with sampling rate 16kHz)
 train_dataset = train_dataset.cast_column("audio", Audio(sampling_rate=16000))
 test_dataset = test_dataset.cast_column("audio", Audio(sampling_rate=16000))
-
+print("Train-Test Split Completed")
 # Loading the feature extractor, tokenizer, and processor models
 feature_extractor = WhisperFeatureExtractor.from_pretrained(
     "openai/whisper-base"
@@ -326,7 +368,7 @@ processor = WhisperProcessor.from_pretrained(
 # Preprocessing the training and testing datasets
 train_dataset2 = train_dataset.map(prepare_dataset, num_proc=1)
 test_dataset2 = test_dataset.map(prepare_dataset, num_proc=1)
-
+print("split-2")
 data_collator = DataCollatorSpeechSeq2SeqWithPadding(
     processor=processor
 )  # Creating the data collator
@@ -344,9 +386,9 @@ model.config.forced_decoder_ids = (
 model.config.suppress_tokens = (
     []
 )  # Disable token suppression if causing issues
-
+print("model loaded")
 training_args = Seq2SeqTrainingArguments(
-    output_dir="./whisper-small-eng-v2",  # output directory
+    output_dir="./whisper-small-eng",  # output directory
     per_device_train_batch_size=4,  # batch size per device during training
     gradient_accumulation_steps=64,  # total number of steps before back propagation
     learning_rate=1e-5,  # learning rate
@@ -378,8 +420,8 @@ trainer = Seq2SeqTrainer(
     compute_metrics=compute_metrics,
     tokenizer=processor.feature_extractor,
 )  # Creating the trainer
-
+print("Training the model......")
 trainer.train()  # Training the model
-
+print("Model Saved")
 model.save_pretrained("./whisper-small-eng")  # Saving the model
 processor.save_pretrained("./whisper-small-eng")  # Saving the processor

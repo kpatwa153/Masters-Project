@@ -1,14 +1,49 @@
+"""
+PDF Content Extraction Utilities
+
+This module provides utility functions for extracting different types of content from PDF documents,
+including:
+
+- **Text**: Full text from each page using PyMuPDF.
+- **Images**: Embedded images from all pages, resized to 512x512 and saved as PNGs using PIL.
+- **Tables**: Structured tables using Camelot's lattice mode, returned as JSON-style dictionaries.
+
+Core Functions:
+---------------
+1. extract_text_from_pdf(doc):
+    Extracts all text from a PyMuPDF Document object.
+
+2. extract_images_from_pdf(doc, output_folder="extracted_images"):
+    Extracts and resizes all embedded images from the PDF and saves them to the specified folder.
+
+3. extract_table_content(pdf_stream):
+    Uses Camelot to parse tables from a PDF byte stream and returns a list of structured tables.
+
+4. pdf_content_extraction(doc, pdf_stream):
+    A wrapper that extracts text, images, and tables from a PDF document and returns them in a structured dictionary.
+
+Dependencies:
+-------------
+- PyMuPDF (fitz) – for reading PDF text and images
+- PIL (Pillow) – for image processing
+- Camelot – for PDF table extraction
+- tempfile, io, os – for handling temporary file storage and streams
+
+Typical Use Case:
+-----------------
+This module is ideal for end-to-end content extraction in document analysis workflows where text,
+visual content, and tabular data are all needed from PDF files.
+"""
+
 import io
-import json
 import os
+import tempfile
 
 import camelot.io as camelot
-import fitz  # PyMuPDF
-import IPython.display as display
 from PIL import Image
 
 
-def extract_text_from_pdf(pdf_path):
+def extract_text_from_pdf(doc):
     """
     Extracts text from a PDF file.
 
@@ -16,12 +51,12 @@ def extract_text_from_pdf(pdf_path):
     concatenating the text into a single string with newline separators.
 
     Args:
-        pdf_path (str): Path to the PDF file.
+        doc (Document): The input PDF document.
 
     Returns:
         str: Extracted text from the entire PDF document.
     """
-    doc = fitz.open(pdf_path)
+    # doc = pymupdf.open(pdf_path)
     text = ""
 
     for page in doc:
@@ -30,7 +65,7 @@ def extract_text_from_pdf(pdf_path):
     return text
 
 
-def extract_images_from_pdf(pdf_path, output_folder="extracted_images"):
+def extract_images_from_pdf(doc, output_folder="extracted_images"):
     """
     Extracts images from a PDF file and saves them as PNG files.
 
@@ -39,7 +74,7 @@ def extract_images_from_pdf(pdf_path, output_folder="extracted_images"):
     output folder.
 
     Args:
-        pdf_path (str): Path to the input PDF file.
+        doc (Document): The input PDF document.
         output_folder (str, optional): Directory where extracted images will be
                                        saved. Defaults to "extracted_images".
 
@@ -49,7 +84,7 @@ def extract_images_from_pdf(pdf_path, output_folder="extracted_images"):
     os.makedirs(
         output_folder, exist_ok=True
     )  # Create output folder if it doesn't exist
-    doc = fitz.open(pdf_path)
+    # doc = pymupdf.open(pdf_path)
     image_paths = []
 
     for page_num in range(len(doc)):
@@ -73,7 +108,7 @@ def extract_images_from_pdf(pdf_path, output_folder="extracted_images"):
     return image_paths
 
 
-def extract_table_content(pdf_path):
+def extract_table_content(pdf_stream):
     """
     Extracts tables from a PDF file using Camelot and formats them as JSON.
 
@@ -82,11 +117,15 @@ def extract_table_content(pdf_path):
     of dictionaries, where each dictionary represents a table with its extracted data.
 
     Args:
-        pdf_path (str): Path to the PDF file.
+        pdf_stream (BytesIO): A stream of the PDF file.
 
     Returns:
         Dict: A dictionary containing extracted tables and their data.
     """
+    # Save the PDF to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+        tmp_file.write(pdf_stream.read())
+        pdf_path = tmp_file.name
     tables = camelot.read_pdf(pdf_path, pages="all", flavor="lattice")
     all_tables_data = []  # List to store processed tables
 
@@ -103,7 +142,7 @@ def extract_table_content(pdf_path):
     return all_tables_data
 
 
-def pdf_content_extraction(pdf_path):
+def pdf_content_extraction(doc, pdf_stream):
     """
     Extracts text, images, and tables from a PDF file.
 
@@ -113,7 +152,8 @@ def pdf_content_extraction(pdf_path):
     as a structured dictionary.
 
     Args:
-        pdf_path (str): The file path to the input PDF document.
+        doc (Document): The input PDF document.
+        pdf_stream (BytesIO): A stream of the PDF file.
 
     Returns:
         dict: A dictionary with the following keys:
@@ -122,7 +162,7 @@ def pdf_content_extraction(pdf_path):
             - "tables" (list): List of extracted tables, each represented as a dictionary.
     """
     content = dict()
-    content["text"] = extract_text_from_pdf(pdf_path)
-    content["images"] = extract_images_from_pdf(pdf_path)
-    content["tables"] = extract_table_content(pdf_path)
+    content["text"] = extract_text_from_pdf(doc)
+    content["images"] = extract_images_from_pdf(doc)
+    content["tables"] = extract_table_content(pdf_stream)
     return content

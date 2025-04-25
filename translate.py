@@ -1,7 +1,50 @@
+"""
+PDF Translation and Resizing Utilities
+
+This module provides tools to preprocess and translate the text content of PDF documents
+while preserving their visual structure, layout, and style. It is especially useful for
+creating translated versions of documents without altering formatting or visuals.
+
+Key Functionalities:
+--------------------
+
+1. **PDF Resizing**
+   - `resize_pdf(input_pdf, output_pdf, scale_factor=1.2)`:
+     Scales all pages of a PDF by a given factor. This is useful for enlarging the page
+     space to make room for translated text that may take up more space than the original.
+
+2. **PDF Translation**
+   - `translate_pdf(input_pdf, output_pdf, language, translator)`:
+     Translates the textual content of a resized PDF using a translator (e.g., Deep Translator).
+     It preserves the layout by:
+       - overlaying white rectangles on the original text
+       - inserting translated text as styled HTML blocks
+       - using Optional Content Groups (OCGs) to separate visual layers
+
+   This function supports translation into any language supported by the given translator
+   and ensures clean rendering in the output PDF.
+
+Key Dependencies:
+-----------------
+- `pymupdf` (for PDF manipulation)
+- `deep_translator.GoogleTranslator` (for translation support)
+- `os` (for file operations)
+
+Text Extraction Settings:
+-------------------------
+- Text is dehyphenated and whitespace preserved for improved block-based processing.
+
+"""
+
 import os
 
 import pymupdf
 from deep_translator import GoogleTranslator
+
+# Define color "white"
+WHITE = pymupdf.pdfcolor["white"]
+# This flag ensures that text will be dehyphenated after extraction.
+textflags = pymupdf.TEXT_DEHYPHENATE | pymupdf.TEXT_PRESERVE_WHITESPACE
 
 
 def resize_pdf(input_pdf, output_pdf: str, scale_factor: float = 1.2):
@@ -10,8 +53,9 @@ def resize_pdf(input_pdf, output_pdf: str, scale_factor: float = 1.2):
 
     Parameters:
     -----------
-    input_pdf : str
-        Path to the PDF file.
+    input_pdf : Document
+        the PDF file to be translated.
+        This should be a `pymupdf` Document object.
     output_pdf : str
         Path to save the resized PDF.
     scale_factor : float, optional
@@ -52,30 +96,37 @@ def resize_pdf(input_pdf, output_pdf: str, scale_factor: float = 1.2):
     return output_pdf
 
 
-def translate_pdf(input_pdf: str, output_pdf: str):
+def translate_pdf(input_pdf: str, output_pdf: str, language: str, translator):
     """
-    Translates the text content of a PDF from English to Desired Language while preserving the layout.
+    Translates the text content of a PDF from English to a specified language while preserving layout and structure.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     input_pdf : str
-        Path to the input PDF (expected to be resized).
+        Path to the input PDF (expected to be preprocessed/resized).
     output_pdf : str
-        Path to save the translated PDF.
+        Path where the translated PDF will be saved.
+    language : str
+        Target language for translation (used for naming the optional content group).
+    translator : Callable
+        A translation function or model with a `.translate(text)` method.
 
-    Behavior:
-    ---------
-    - Opens the input PDF and creates a new document.
-    - Copies the original content from each page while maintaining formatting.
-    - Extracts text blocks and translates them from English to French.
-    - Covers the original text with a white background and inserts the translated text.
-    - Saves the translated PDF to the specified output path.
-    - Deletes the input PDF (`input_pdf`) after translation.
+    Process
+    -------
+    - Opens the input PDF and creates a new blank document.
+    - For each page:
+        - Duplicates the layout and visuals of the original page.
+        - Extracts text blocks from the original.
+        - Translates each block from English to the target language.
+        - Draws a white rectangle over the original text area.
+        - Inserts the translated text using HTML formatting (to preserve style).
+    - Adds translated text as an optional content group (OCG).
+    - Deletes the original input PDF after saving the translated one.
 
-    Returns:
-    --------
+    Returns
+    -------
     str
-        Path to the translated PDF.
+        Path to the newly saved translated PDF.
     """
     resized_doc = pymupdf.open(input_pdf)
     translated_doc = pymupdf.open()
@@ -88,8 +139,8 @@ def translate_pdf(input_pdf: str, output_pdf: str):
             new_page.rect, resized_doc, page.number
         )  # Copy content from original page
 
-        # Define an Optional Content layer in the new document named "French"
-        ocg_xref = translated_doc.add_ocg("French", on=True)
+        # Define an Optional Content layer in the new document
+        ocg_xref = translated_doc.add_ocg(f"{language.capitalize()}", on=True)
 
         # Extract text grouped in blocks
         blocks = page.get_text("blocks", flags=textflags)
@@ -122,20 +173,21 @@ def translate_pdf(input_pdf: str, output_pdf: str):
     return output_pdf
 
 
-# Define color "white"
-WHITE = pymupdf.pdfcolor["white"]
-# This flag ensures that text will be dehyphenated after extraction.
-textflags = pymupdf.TEXT_DEHYPHENATE | pymupdf.TEXT_PRESERVE_WHITESPACE
-# Configure the translator (English to French)
-translator = GoogleTranslator(source="en", target="fr")
+# language = str(input("Enter the language you want to translate to: "))
+# languages = GoogleTranslator().get_supported_languages(as_dict=True)
+# language_code = languages.get(language.lower())
+# # Configure the translator (English to selected language)
+# translator = GoogleTranslator(source="auto", target=language_code)
 
 
-path = "pdf.pdf"  # Path to the PDF file
-try:
-    doc = pymupdf.open("pdf.pdf")  # Load the PDF file
-    resized = resize_pdf(doc, "pdf_resized.pdf")  # Resize the PDF
-    print("PDF Resized")
-    translate_pdf(resized, "pdf-french.pdf")  # Translate the PDF
-    print("pdf translated")
-except Exception:
-    pass
+# path = "pdf.pdf"  # Path to the PDF file
+# try:
+#     doc = pymupdf.open("pdf.pdf")  # Load the PDF file
+#     resized = resize_pdf(doc, "pdf_resized.pdf")  # Resize the PDF
+#     print("PDF Resized")
+#     translate_pdf(
+#         resized, f"pdf-{language}.pdf", language, translator
+#     )  # Translate the PDF
+#     print("pdf translated")
+# except Exception:
+#     pass
