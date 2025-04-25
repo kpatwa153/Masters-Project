@@ -48,15 +48,26 @@ Model Notes:
 
 """
 
+<<<<<<< HEAD
 
 import torch
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
 import os
+=======
+import os
+
+import torch
+from transformers import WhisperForConditionalGeneration, WhisperProcessor
+>>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265
 
 # Load fine-tuned model
 model_path = os.path.abspath("../whisper-small-eng")
 model = WhisperForConditionalGeneration.from_pretrained(model_path)
+<<<<<<< HEAD
 processor = WhisperProcessor.from_pretrained(model_path, use_fast = True)
+=======
+processor = WhisperProcessor.from_pretrained(model_path)
+>>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265
 
 
 # Ensure the model is in evaluation mode
@@ -160,4 +171,8 @@ def translate_audio(transcriptions, translator):
             )  # Translate each transcription
             file.write(
                 f"{ind+1}: {translation} \n\n"
+<<<<<<< HEAD
             )  # Write each translation to the file
+=======
+            )  # Write each translation to the file
+>>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265

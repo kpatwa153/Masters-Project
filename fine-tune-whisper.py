@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 This module handles the preprocessing, training, and evaluation of a speech-to-text model using the Whisper architecture from Hugging Face.
 
@@ -40,6 +41,11 @@ Usage:
 
 # pip install jiwer to use `wer` evaluation metrics
 
+=======
+# Windows - ffmpeg installed and added to path
+# pip install jiwer to use `wer` evaluation metrics
+ 
+>>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265
 # Importing the required libraries
 import os
 import re
@@ -423,5 +429,10 @@ trainer = Seq2SeqTrainer(
 print("Training the model......")
 trainer.train()  # Training the model
 print("Model Saved")
+<<<<<<< HEAD
 model.save_pretrained("./whisper-small-eng")  # Saving the model
 processor.save_pretrained("./whisper-small-eng")  # Saving the processor
+=======
+model.save_pretrained("./whisper-small-eng-v2")  # Saving the model
+processor.save_pretrained("./whisper-small-eng-v2")  # Saving the processor
+>>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265

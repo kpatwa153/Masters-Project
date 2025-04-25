@@ -34,6 +34,16 @@ Text Extraction Settings:
 -------------------------
 - Text is dehyphenated and whitespace preserved for improved block-based processing.
 
+<<<<<<< HEAD
+=======
+Example Use Case:
+-----------------
+This module is ideal for:
+- Translating brochures, reports, or forms to other languages.
+- Preserving visual content while replacing the textual content.
+- Creating multilingual versions of static PDF documents.
+
+>>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265
 """
 
 import os
@@ -171,6 +181,7 @@ def translate_pdf(input_pdf: str, output_pdf: str, language: str, translator):
     resized_doc.close()
     os.remove(input_pdf)  # Remove the resized PDF
     return output_pdf
+<<<<<<< HEAD
 
 
 # language = str(input("Enter the language you want to translate to: "))
@@ -191,3 +202,5 @@ def translate_pdf(input_pdf: str, output_pdf: str, language: str, translator):
 #     print("pdf translated")
 # except Exception:
 #     pass
+=======
+>>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265

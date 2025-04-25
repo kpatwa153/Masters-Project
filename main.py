@@ -1,5 +1,52 @@
+"""
+Medical Bot - A Multimodal LLM-Powered File Assistant for PDF and Audio Processing.
+
+This module provides an interactive file assistant that leverages large language models (LLMs) and machine learning techniques for processing, summarizing, translating, and extracting embeddings from uploaded files (PDFs and MP3 audio). It uses Qdrant for vector storage and retrieval, Hugging Face models for text and image embeddings, and integrates various file processing workflows including transcription, translation, and summarization.
+
+Key Features:
+- PDF and MP3 file support: Upload and process PDF and audio files.
+- Text, image, and table embeddings: Store embeddings of text, images, and tables in Qdrant.
+- Translation: Automatically translate PDF and audio files into different languages.
+- Summarization: Generate summaries of the document or transcription.
+- Chatbot interface: Interact with the file through a chatbot interface to ask questions, get summaries, and retrieve relevant content.
+
+Dependencies:
+- torch
+- langchain_huggingface
+- QdrantClient
+- transformers
+- librosa
+- pymupdf
+- streamlit
+- content_extract
+- deep_translator
+- embeddings
+- store_embeddings
+- retrieve
+- translate
+
+Modules:
+- `pdf_content_extraction`: Handles PDF content extraction, including text, images, and tables.
+- `split_audio`, `transcribe`, `translate_audio`: Audio processing functions including transcription and translation.
+- `split_text`, `image_generate_embeddings`, `generate_table_embeddings`: Helper functions to split content and generate embeddings.
+- `store_text`, `store_image_embeddings`, `store_table_embeddings`: Functions for storing embeddings in Qdrant.
+- `prompt`, `pdf_summarization`, `audio_summarization`, `retrieve_text`, `image_retrieval`, `table_retrieve`, `reranking`, `generate_response`: Functions for querying and processing the extracted content.
+- `resize_pdf`, `translate_pdf`: Functions for resizing and translating PDF files.
+
+Usage:
+- Upload PDF or MP3 files and interact with the chatbot interface for various actions like summarization, translation, and querying.
+- The application supports a multilingual chatbot, capable of translating content and answering user questions based on the content.
+
+Session State:
+- The session state is used to track the file content, embeddings, translation mode, chat history, and other session-related information.
+
+Note:
+- This module assumes a pre-configured Qdrant client for storing and retrieving vector embeddings.
+"""
+
 import sys
 import types
+
 import torch
 
 if "torch.classes" in sys.modules:
@@ -7,30 +54,46 @@ if "torch.classes" in sys.modules:
         del sys.modules["torch.classes"]
 
 from io import BytesIO
-from langchain_huggingface import HuggingFaceEmbeddings
-
-# Qdrant Client and Models
-from qdrant_client import QdrantClient
-# Transformers for Models
-from transformers import CLIPProcessor, CLIPModel
-from transformers import (
-    Qwen2VLForConditionalGeneration,
-    AutoProcessor,
-)
 
 import librosa
 import pymupdf
 import streamlit as st
-from content_extract import pdf_content_extraction
 from deep_translator import GoogleTranslator
-from transcribe import (
-    split_audio,
-    transcribe,
-    translate_audio,
+from langchain_huggingface import HuggingFaceEmbeddings
+
+# Qdrant Client and Models
+from qdrant_client import QdrantClient
+
+# Transformers for Models
+from transformers import (
+    AutoProcessor,
+    CLIPModel,
+    CLIPProcessor,
+    Qwen2VLForConditionalGeneration,
 )
-from embeddings import split_text, image_generate_embeddings, generate_table_embeddings
-from store_embeddings import store_text, store_image_embeddings, store_table_embeddings
-from retrieve import pdf_prompt,audio_prompt, pdf_summarization, audio_summarization, retrieve_text, image_retrieval, table_retrieve, reranking, generate_response
+
+from content_extract import pdf_content_extraction
+from embeddings import (
+    generate_table_embeddings,
+    image_generate_embeddings,
+    split_text,
+)
+from retrieve import (
+    audio_summarization,
+    generate_response,
+    image_retrieval,
+    pdf_summarization,
+    prompt,
+    reranking,
+    retrieve_text,
+    table_retrieve,
+)
+from store_embeddings import (
+    store_image_embeddings,
+    store_table_embeddings,
+    store_text,
+)
+from transcribe import split_audio, transcribe, translate_audio
 from translate import resize_pdf, translate_pdf
 
 CHUNK_DURATION = 30  # 30 seconds per chunk
@@ -50,23 +113,35 @@ if "qwen_model" not in st.session_state:
     )
 
     # Image embedding model
-    st.session_state.clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-    st.session_state.clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+    st.session_state.clip_model = CLIPModel.from_pretrained(
+        "openai/clip-vit-base-patch32"
+    )
+    st.session_state.clip_processor = CLIPProcessor.from_pretrained(
+        "openai/clip-vit-base-patch32"
+    )
 
     # Qwen model + processor
-    st.session_state.qwen_model = Qwen2VLForConditionalGeneration.from_pretrained(
-        "Qwen/Qwen2-VL-2B-Instruct", torch_dtype="auto"
+    st.session_state.qwen_model = (
+        Qwen2VLForConditionalGeneration.from_pretrained(
+            "Qwen/Qwen2-VL-2B-Instruct", torch_dtype="auto"
+        )
     )
-    st.session_state.qwen_processor = AutoProcessor.from_pretrained("Qwen/Qwen2-VL-2B-Instruct")
+    st.session_state.qwen_processor = AutoProcessor.from_pretrained(
+        "Qwen/Qwen2-VL-2B-Instruct"
+    )
 
-    st.session_state.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    st.session_state.device = torch.device(
+        "cuda" if torch.cuda.is_available() else "cpu"
+    )
     st.session_state.qwen_model.to(st.session_state.device)
     st.session_state.qwen_model.eval()
 
 
 # App title
 st.set_page_config(page_title="Medical Bot", layout="wide")
-st.title("Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System")
+st.title(
+    "Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System"
+)
 
 # Session state to track conversation
 if "chat_history" not in st.session_state:
@@ -78,7 +153,7 @@ if "translation_mode" not in st.session_state:
 
 # Upload file (now at top center)
 uploaded_file = st.file_uploader(
-    "📁 Upload a PDF or MP3 file to begin", type=["pdf", "mp3"], key="upload_widget",
+    "📁 Upload a PDF or MP3 file to begin", type=["pdf", "mp3"]
 )
 if uploaded_file:
     st.session_state.file = uploaded_file
@@ -97,13 +172,19 @@ if uploaded_file:
                 # Storing Text Embeddings
                 if "text_embedding_store" not in st.session_state:
                     text_chunks = split_text(st.session_state.content["text"])
-                    st.session_state.text_vector_store = store_text(text_chunks, st.session_state.text_embedding_model, TEXT_COLLECTION)
+                    st.session_state.text_vector_store = store_text(
+                        text_chunks,
+                        st.session_state.text_embedding_model,
+                        TEXT_COLLECTION,
+                    )
                     st.session_state.text_chunks = text_chunks
                     st.text_embedding_store = True
                 if "image_embedding_store" not in st.session_state:
                     if st.session_state.content["images"]:
                         image_embeddings, px, size = image_generate_embeddings(
-                            st.session_state.content["images"], st.session_state.clip_processor, st.session_state.clip_model
+                            st.session_state.content["images"],
+                            st.session_state.clip_processor,
+                            st.session_state.clip_model,
                         )
                         store_image_embeddings(
                             st.session_state.qdrant_client,
@@ -119,14 +200,19 @@ if uploaded_file:
                         st.image_embedding_store = False
                 if "table_embedding_store" not in st.session_state:
                     if st.session_state.content["tables"]:
-                        table_embeddings = generate_table_embeddings(st.session_state.content, st.session_state.text_embedding_model)
+                        table_embeddings = generate_table_embeddings(
+                            st.session_state.content,
+                            st.session_state.text_embedding_model,
+                        )
                         store_table_embeddings(
-                            st.session_state.qdrant_client, TABLE_COLLECTION, TABLE_VECTOR_SIZE, table_embeddings
+                            st.session_state.qdrant_client,
+                            TABLE_COLLECTION,
+                            TABLE_VECTOR_SIZE,
+                            table_embeddings,
                         )
                         st.session_state.table_embedding_store = True
                     else:
                         st.session_state.table_embedding_store = False
-
 
         st.success("✅ PDF file uploaded.")
 
@@ -141,8 +227,14 @@ if uploaded_file:
                 st.session_state.sr = sr
                 st.session_state.transcriptions = transcriptions
                 if "text_embedding_store" not in st.session_state:
-                    text_chunks = split_text(" ".join(st.session_state.transcriptions))
-                    st.session_state.text_vector_store = store_text(text_chunks, st.session_state.text_embedding_model, TEXT_COLLECTION)
+                    text_chunks = split_text(
+                        " ".join(st.session_state.transcriptions)
+                    )
+                    st.session_state.text_vector_store = store_text(
+                        text_chunks,
+                        st.session_state.text_embedding_model,
+                        TEXT_COLLECTION,
+                    )
                     st.text_embedding_store = True
             st.success("✅ MP3 file uploaded.")
 
@@ -164,32 +256,43 @@ if st.session_state.file:
 
     with col2:
         if st.button("📝 Summarize"):
-            with st.spinner("Summarizing......"):
-                partial_summary = []
-                if file_type == "application/pdf":
-                    pdf_summary_prompt = pdf_summarization()
-                    images = st.session_state.content.get("images", [])
-                    partial_summary.append(generate_response(st.session_state.qwen_processor, st.session_state.qwen_model,
-                        st.session_state.device, pdf_summary_prompt,
+            partial_summary = []
+            if file_type == "application/pdf":
+                pdf_summary_prompt = pdf_summarization()
+                partial_summary.append(
+                    generate_response(
+                        st.session_state.qwen_processor,
+                        st.session_state.qwen_model,
+                        st.session_state.device,
+                        pdf_summary_prompt,
                         "Summarize the Information",
-                        st.session_state.content["text"], images))
-                if file_type == "audio/mpeg":
-                    audio_summary_prompt = audio_summarization()
-                    partial_summary.append(generate_response(st.session_state.qwen_processor, st.session_state.qwen_model,
-                        st.session_state.device, audio_summary_prompt,
+                        st.session_state.content["text"],
+                    )
+                )
+            if file_type == "audio/mpeg":
+                audio_summary_prompt = audio_summarization()
+                partial_summary.append(
+                    generate_response(
+                        st.session_state.qwen_processor,
+                        st.session_state.qwen_model,
+                        st.session_state.device,
+                        audio_summary_prompt,
                         "Summarize the Information",
-                        st.session_state.transcriptions))
+                        st.session_state.transcriptions,
+                    )
+                )
             final_summary = "\n".join(f"- {s}" for s in partial_summary)
-            st.session_state.chat_history.append(("You", "Summarize the document"))
+            st.session_state.chat_history.append(
+                ("You", "Summarize the document")
+            )
             st.session_state.chat_history.append(("Bot", final_summary))
-            
 
     with col3:
         if st.button("🔄 Restart"):
-            with st.spinner("🔄 Restarting..."):
-                st.session_state.clear()
-                st.session_state.pop("upload_widget", None)
-                st.rerun()
+            st.session_state.chat_history = []
+            st.session_state.file = None
+            st.session_state.translation_mode = False
+            st.rerun()
 
     # Language dropdown if Translate was clicked
     if st.session_state.translation_mode:
@@ -234,45 +337,59 @@ if st.session_state.file:
     # Chat input and history
     user_input = st.text_input("💭 You:", key="user_input")
     if user_input:
+        if "promt_template" not in st.session_state:
+            st.session_state.prompt_template = prompt()
         output_text = ""
         with st.spinner("Generating Response..."):
             if file_type == "application/pdf":
-                if "pdf_promt_template" not in st.session_state:
-                    st.session_state.prompt_template = pdf_prompt()
                 try:
-                    table_retriever = table_retrieve(st.session_state.qdrant_client, TABLE_COLLECTION, st.session_state.text_embedding_model)
+                    table_retriever = table_retrieve(
+                        st.session_state.qdrant_client,
+                        TABLE_COLLECTION,
+                        st.session_state.text_embedding_model,
+                    )
                     image_results = image_retrieval(
-                        st.session_state.qdrant_client, user_input, st.session_state.clip_processor, st.session_state.clip_model, IMAGE_COLLECTION
+                        st.session_state.qdrant_client,
+                        user_input,
+                        st.session_state.clip_processor,
+                        st.session_state.clip_model,
+                        IMAGE_COLLECTION,
                     )
                 except ValueError as e:
-                    st.warning("⚠️ Table collection not found. Skipping table retrieval.")
+                    st.warning(
+                        "⚠️ Table collection not found. Skipping table retrieval."
+                    )
                     table_retriever = None
-                relevant_text = retrieve_text(st.session_state.text_vector_store)
+                relevant_text = retrieve_text(
+                    st.session_state.text_vector_store
+                )
                 # table_retriever = table_retrieve(client, TABLE_COLLECTION, text_embedding_model)
                 # Use reranking with conditional retrievers
-                output_text = reranking(user_input, relevant_text, table_retriever or None)
+                output_text = reranking(
+                    user_input, relevant_text, table_retriever or None
+                )
+
+                # Use generate_response with optional image input
                 response = generate_response(
-                    st.session_state.qwen_processor, 
-                    st.session_state.qwen_model, 
+                    st.session_state.qwen_processor,
+                    st.session_state.qwen_model,
                     st.session_state.device,
                     st.session_state.prompt_template,
                     user_input,
                     output_text,
-                    image_path=image_results if image_results else None
+                    image_path=image_results if image_results else None,
                 )
             elif file_type == "audio/mpeg":
-                if "audio_promt_template" not in st.session_state:
-                    st.session_state.prompt_template = audio_prompt()
-                text_retriever = retrieve_text(st.session_state.text_vector_store)
-                docs = text_retriever.invoke(user_input)
-                context = " ".join([d.page_content for d in docs])
+                relevant_text = retrieve_text(
+                    st.session_state.text_vector_store
+                )
                 response = generate_response(
-                    st.session_state.qwen_processor, 
-                    st.session_state.qwen_model, 
+                    st.session_state.qwen_processor,
+                    st.session_state.qwen_model,
                     st.session_state.device,
                     st.session_state.prompt_template,
                     user_input,
-                    context,
+                    relevant_text,
                 )
         bot_response = f"{response}"
         st.session_state.chat_history.append(("You", user_input))
