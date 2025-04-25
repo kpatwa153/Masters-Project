@@ -33,17 +33,6 @@ Key Dependencies:
 Text Extraction Settings:
 -------------------------
 - Text is dehyphenated and whitespace preserved for improved block-based processing.
-
-<<<<<<< HEAD
-=======
-Example Use Case:
------------------
-This module is ideal for:
-- Translating brochures, reports, or forms to other languages.
-- Preserving visual content while replacing the textual content.
-- Creating multilingual versions of static PDF documents.
-
->>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265
 """
 
 import os
@@ -181,26 +170,3 @@ def translate_pdf(input_pdf: str, output_pdf: str, language: str, translator):
     resized_doc.close()
     os.remove(input_pdf)  # Remove the resized PDF
     return output_pdf
-<<<<<<< HEAD
-
-
-# language = str(input("Enter the language you want to translate to: "))
-# languages = GoogleTranslator().get_supported_languages(as_dict=True)
-# language_code = languages.get(language.lower())
-# # Configure the translator (English to selected language)
-# translator = GoogleTranslator(source="auto", target=language_code)
-
-
-# path = "pdf.pdf"  # Path to the PDF file
-# try:
-#     doc = pymupdf.open("pdf.pdf")  # Load the PDF file
-#     resized = resize_pdf(doc, "pdf_resized.pdf")  # Resize the PDF
-#     print("PDF Resized")
-#     translate_pdf(
-#         resized, f"pdf-{language}.pdf", language, translator
-#     )  # Translate the PDF
-#     print("pdf translated")
-# except Exception:
-#     pass
-=======
->>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265

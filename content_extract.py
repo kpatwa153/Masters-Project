@@ -33,23 +33,6 @@ Typical Use Case:
 -----------------
 This module is ideal for end-to-end content extraction in document analysis workflows where text,
 visual content, and tabular data are all needed from PDF files.
-<<<<<<< HEAD
-=======
-
-Example Output:
----------------
-{
-    "text": "...",
-    "images": ["page_1_image_1.png", "page_2_image_1.png", ...],
-    "tables": [
-        {
-            "table_id": 1,
-            "data": [{"Header1": "Value1", "Header2": "Value2"}, ...]
-        },
-        ...
-    ]
-}
->>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265
 """
 
 import io

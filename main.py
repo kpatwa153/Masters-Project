@@ -1,5 +1,5 @@
 """
-Medical Bot - A Multimodal LLM-Powered File Assistant for PDF and Audio Processing.
+Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System.
 
 This module provides an interactive file assistant that leverages large language models (LLMs) and machine learning techniques for processing, summarizing, translating, and extracting embeddings from uploaded files (PDFs and MP3 audio). It uses Qdrant for vector storage and retrieval, Hugging Face models for text and image embeddings, and integrates various file processing workflows including transcription, translation, and summarization.
 

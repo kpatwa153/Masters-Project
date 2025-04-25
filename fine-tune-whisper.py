@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 This module handles the preprocessing, training, and evaluation of a speech-to-text model using the Whisper architecture from Hugging Face.
 
@@ -40,12 +39,6 @@ Usage:
 """
 
 # pip install jiwer to use `wer` evaluation metrics
-
-=======
-# Windows - ffmpeg installed and added to path
-# pip install jiwer to use `wer` evaluation metrics
- 
->>>>>>> 0bbe94ce81090c6f330ac1230f3721dd842ea265
 # Importing the required libraries
 import os
 import re
