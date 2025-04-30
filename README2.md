@@ -73,6 +73,7 @@ User-friendly interface orchestrating the entire pipeline.
 ---
 
 ## Architecture
+
 1. **Content Extraction** (`content_extract.py`): Parse PDFs into text, images, tables.  
 2. **Embedding Generation** (`embeddings.py`): Vectorize text, images, tables.  
 3. **Vector Storage** (`store_embeddings.py`): Persist embeddings in Qdrant.  
@@ -81,6 +82,53 @@ User-friendly interface orchestrating the entire pipeline.
 6. **UI Layer** (`main.py`): Streamlit app for file upload, chat, and controls.
 
 ---
+### User Interaction Flow
+
+![End-User Flowchart](User_Flowchart.png)  
+*Figure 1: Flowchart of how users interact with the system — from uploading files to retrieving results via action buttons or queries.*
+
+- Users upload **PDFs** or **audio files** through a simple Streamlit interface.
+- During interaction:
+  - They can ask **queries** to retrieve specific information.
+  - Use buttons to:
+    - 🌐 Translate the document
+    - 📝 Summarize the content
+    - 🔄 Reset the session
+
+---
+
+### Architecture Overview
+
+![Project Architecture](Architecture2.png)  
+*Figure 2: System architecture showing ingestion, content extraction, embedding, storage, retrieval, and generation steps.*
+
+The backend pipeline is modular and comprises the following steps:
+
+1. **File Ingestion:**  
+   PDFs and audio files are accepted. PDFs are parsed for:
+   - Raw text
+   - Images (e.g., scanned prescriptions)
+   - Tables (e.g., lab reports)
+
+2. **Content Extraction:**  
+   `content_extract.py` breaks documents down by modality. Audio is transcribed using Whisper.
+
+3. **Embedding Generation and Storage:**  
+   - **Text** → BGE embeddings  
+   - **Images** → CLIP image embeddings  
+   - **Tables** → Flattened and embedded  
+   All embeddings are stored in separate **Qdrant** collections.
+
+4. **RAG Pipeline with Query Handling:**  
+   - User queries go through a **multi-vector retriever** (text, table, image).
+   - Results are fed into **Qwen2-VL**, a powerful vision-language model that returns context-aware answers.
+
+5. **Translation and Summarization:**  
+   - `translate.py` performs layout-preserving multilingual translation.
+   - `retrieve.py` enables summarization using prompt-based chunking and merging.
+
+---
+
 
 ## Components
 
