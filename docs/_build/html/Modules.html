@@ -1,0 +1,1307 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules package &mdash; Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Modules package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Modules.content_extract">Modules.content_extract module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-functions">Core Functions:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#typical-use-case">Typical Use Case:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.content_extract.extract_images_from_pdf"><code class="docutils literal notranslate"><span class="pre">extract_images_from_pdf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.content_extract.extract_table_content"><code class="docutils literal notranslate"><span class="pre">extract_table_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.content_extract.extract_text_from_pdf"><code class="docutils literal notranslate"><span class="pre">extract_text_from_pdf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.content_extract.pdf_content_extraction"><code class="docutils literal notranslate"><span class="pre">pdf_content_extraction()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Modules.embeddings">Modules.embeddings module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#key-functionalities">Key Functionalities:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#expected-use-cases">Expected Use Cases:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Dependencies:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output-formats">Output Formats:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.embeddings.format_table_for_embedding"><code class="docutils literal notranslate"><span class="pre">format_table_for_embedding()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.embeddings.generate_table_embeddings"><code class="docutils literal notranslate"><span class="pre">generate_table_embeddings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.embeddings.image_generate_embeddings"><code class="docutils literal notranslate"><span class="pre">image_generate_embeddings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.embeddings.split_text"><code class="docutils literal notranslate"><span class="pre">split_text()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Modules.fine_tune_whisper">Modules.fine_tune_whisper module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.fine_tune_whisper.DataCollatorSpeechSeq2SeqWithPadding"><code class="docutils literal notranslate"><span class="pre">DataCollatorSpeechSeq2SeqWithPadding</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Modules.fine_tune_whisper.DataCollatorSpeechSeq2SeqWithPadding.processor"><code class="docutils literal notranslate"><span class="pre">DataCollatorSpeechSeq2SeqWithPadding.processor</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.fine_tune_whisper.clean_text"><code class="docutils literal notranslate"><span class="pre">clean_text()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.fine_tune_whisper.compute_metrics"><code class="docutils literal notranslate"><span class="pre">compute_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.fine_tune_whisper.load_audio_transcripts"><code class="docutils literal notranslate"><span class="pre">load_audio_transcripts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.fine_tune_whisper.prepare_dataset"><code class="docutils literal notranslate"><span class="pre">prepare_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.fine_tune_whisper.split_and_process_audio"><code class="docutils literal notranslate"><span class="pre">split_and_process_audio()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#modules-main-module">Modules.main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Modules.retrieve">Modules.retrieve module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.audio_prompt"><code class="docutils literal notranslate"><span class="pre">audio_prompt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.audio_summarization"><code class="docutils literal notranslate"><span class="pre">audio_summarization()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.generate_response"><code class="docutils literal notranslate"><span class="pre">generate_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.image_retrieval"><code class="docutils literal notranslate"><span class="pre">image_retrieval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.pdf_prompt"><code class="docutils literal notranslate"><span class="pre">pdf_prompt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.pdf_summarization"><code class="docutils literal notranslate"><span class="pre">pdf_summarization()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.reranking"><code class="docutils literal notranslate"><span class="pre">reranking()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.retrieve_text"><code class="docutils literal notranslate"><span class="pre">retrieve_text()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.retrieve.table_retrieve"><code class="docutils literal notranslate"><span class="pre">table_retrieve()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Modules.store_embeddings">Modules.store_embeddings module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Key Functionalities:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#use-cases">Use Cases:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Dependencies:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-output">Example Output:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.store_embeddings.create_collection"><code class="docutils literal notranslate"><span class="pre">create_collection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.store_embeddings.store_image_embeddings"><code class="docutils literal notranslate"><span class="pre">store_image_embeddings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.store_embeddings.store_table_embeddings"><code class="docutils literal notranslate"><span class="pre">store_table_embeddings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.store_embeddings.store_text"><code class="docutils literal notranslate"><span class="pre">store_text()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Modules.transcribe">Modules.transcribe module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Key Functionalities:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Expected Use Cases:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Dependencies:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-notes">Model Notes:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.transcribe.save_transcription"><code class="docutils literal notranslate"><span class="pre">save_transcription()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.transcribe.split_audio"><code class="docutils literal notranslate"><span class="pre">split_audio()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.transcribe.transcribe"><code class="docutils literal notranslate"><span class="pre">transcribe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.transcribe.translate_audio"><code class="docutils literal notranslate"><span class="pre">translate_audio()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Modules.translate">Modules.translate module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Key Functionalities:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-dependencies">Key Dependencies:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text-extraction-settings">Text Extraction Settings:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.translate.resize_pdf"><code class="docutils literal notranslate"><span class="pre">resize_pdf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Modules.translate.translate_pdf"><code class="docutils literal notranslate"><span class="pre">translate_pdf()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-Modules">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Modules package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="modules-package">
+<h1>Modules package<a class="headerlink" href="#modules-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-Modules.content_extract">
+<span id="modules-content-extract-module"></span><h2>Modules.content_extract module<a class="headerlink" href="#module-Modules.content_extract" title="Link to this heading"></a></h2>
+<p>PDF Content Extraction Utilities</p>
+<p>This module provides utility functions for extracting different types of content from PDF documents,
+including:</p>
+<ul class="simple">
+<li><p><strong>Text</strong>: Full text from each page using PyMuPDF.</p></li>
+<li><p><strong>Images</strong>: Embedded images from all pages, resized to 512x512 and saved as PNGs using PIL.</p></li>
+<li><p><strong>Tables</strong>: Structured tables using Camelot’s lattice mode, returned as JSON-style dictionaries.</p></li>
+</ul>
+<section id="core-functions">
+<h3>Core Functions:<a class="headerlink" href="#core-functions" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>extract_text_from_pdf(doc):</dt><dd><p>Extracts all text from a PyMuPDF Document object.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>extract_images_from_pdf(doc, output_folder=”extracted_images”):</dt><dd><p>Extracts and resizes all embedded images from the PDF and saves them to the specified folder.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>extract_table_content(pdf_stream):</dt><dd><p>Uses Camelot to parse tables from a PDF byte stream and returns a list of structured tables.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>pdf_content_extraction(doc, pdf_stream):</dt><dd><p>A wrapper that extracts text, images, and tables from a PDF document and returns them in a structured dictionary.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="dependencies">
+<h3>Dependencies:<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>PyMuPDF (fitz) – for reading PDF text and images</p></li>
+<li><p>PIL (Pillow) – for image processing</p></li>
+<li><p>Camelot – for PDF table extraction</p></li>
+<li><p>tempfile, io, os – for handling temporary file storage and streams</p></li>
+</ul>
+</section>
+<section id="typical-use-case">
+<h3>Typical Use Case:<a class="headerlink" href="#typical-use-case" title="Link to this heading"></a></h3>
+<p>This module is ideal for end-to-end content extraction in document analysis workflows where text,
+visual content, and tabular data are all needed from PDF files.</p>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.content_extract.extract_images_from_pdf">
+<span class="sig-prename descclassname"><span class="pre">Modules.content_extract.</span></span><span class="sig-name descname"><span class="pre">extract_images_from_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'extracted_images'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/content_extract.html#extract_images_from_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.content_extract.extract_images_from_pdf" title="Link to this definition"></a></dt>
+<dd><p>Extracts images from a PDF file and saves them as PNG files.</p>
+<p>This function scans each page of the PDF for embedded images, extracts them,
+resizes them to 512x512 pixels, and saves them as PNG files in the specified
+output folder.</p>
+<dl>
+<dt>Args:</dt><dd><p>doc (Document): The input PDF document.
+output_folder (str, optional): Directory where extracted images will be</p>
+<blockquote>
+<div><p>saved. Defaults to “extracted_images”.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>list: A list of file paths for the extracted images.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.content_extract.extract_table_content">
+<span class="sig-prename descclassname"><span class="pre">Modules.content_extract.</span></span><span class="sig-name descname"><span class="pre">extract_table_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdf_stream</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/content_extract.html#extract_table_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.content_extract.extract_table_content" title="Link to this definition"></a></dt>
+<dd><p>Extracts tables from a PDF file using Camelot and formats them as JSON.</p>
+<p>This function reads a PDF document and extracts tables from each page using
+Camelot’s lattice-based extraction. It then processes the tables into a list
+of dictionaries, where each dictionary represents a table with its extracted data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pdf_stream (BytesIO): A stream of the PDF file.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Dict: A dictionary containing extracted tables and their data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.content_extract.extract_text_from_pdf">
+<span class="sig-prename descclassname"><span class="pre">Modules.content_extract.</span></span><span class="sig-name descname"><span class="pre">extract_text_from_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/content_extract.html#extract_text_from_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.content_extract.extract_text_from_pdf" title="Link to this definition"></a></dt>
+<dd><p>Extracts text from a PDF file.</p>
+<p>This function reads a PDF document and extracts text from each page,
+concatenating the text into a single string with newline separators.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>doc (Document): The input PDF document.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Extracted text from the entire PDF document.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.content_extract.pdf_content_extraction">
+<span class="sig-prename descclassname"><span class="pre">Modules.content_extract.</span></span><span class="sig-name descname"><span class="pre">pdf_content_extraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdf_stream</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/content_extract.html#pdf_content_extraction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.content_extract.pdf_content_extraction" title="Link to this definition"></a></dt>
+<dd><p>Extracts text, images, and tables from a PDF file.</p>
+<p>This function combines the extraction of textual content, embedded images,
+and tabular data from a given PDF document. It internally uses specialized
+helper functions to process and collect each content type, and returns them
+as a structured dictionary.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>doc (Document): The input PDF document.
+pdf_stream (BytesIO): A stream of the PDF file.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>dict: A dictionary with the following keys:</dt><dd><ul class="simple">
+<li><p>“text” (str): Extracted textual content.</p></li>
+<li><p>“images” (list): List of file paths to the extracted and resized images.</p></li>
+<li><p>“tables” (list): List of extracted tables, each represented as a dictionary.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Modules.embeddings">
+<span id="modules-embeddings-module"></span><h2>Modules.embeddings module<a class="headerlink" href="#module-Modules.embeddings" title="Link to this heading"></a></h2>
+<p>Embeddings Utility Module for Text, Tables, and Images</p>
+<p>This module provides helper functions for preparing and generating embeddings
+from text, table data, and images—typically used in document intelligence,
+semantic search, or retrieval-augmented generation (RAG) pipelines.</p>
+<section id="key-functionalities">
+<h3>Key Functionalities:<a class="headerlink" href="#key-functionalities" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Text Chunking</strong>  
+- <cite>split_text(text, chunk_size=512, chunk_overlap=50)</cite>:</p>
+<blockquote>
+<div><p>Splits raw text into overlapping chunks using LangChain’s RecursiveCharacterTextSplitter,
+preserving context across chunks for better embedding and retrieval.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Image Embedding Generation</strong>  
+- <cite>image_generate_embeddings(image_paths, clip_processor, clip_model)</cite>:</p>
+<blockquote>
+<div><p>Generates image embeddings using the CLIP model from Hugging Face. Also returns raw pixel data
+and image dimensions for potential auxiliary tasks like rendering or reconstruction.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Table Text Formatting &amp; Embedding</strong>  
+- <cite>format_table_for_embedding(table_data)</cite>:</p>
+<blockquote>
+<div><p>Converts structured table data (usually extracted from PDFs) into a readable string format.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><cite>generate_table_embeddings(content, text_embedding_model)</cite>:  
+Converts all tables in a document into embeddings using a text embedding model.
+Returns a list of dictionaries including the table ID, formatted table string, and its embedding vector.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="expected-use-cases">
+<h3>Expected Use Cases:<a class="headerlink" href="#expected-use-cases" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Embedding-based document search (RAG)</p></li>
+<li><p>Vision-language similarity</p></li>
+<li><p>Table understanding and semantic retrieval</p></li>
+<li><p>Preparing multi-modal content for downstream models</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Dependencies:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>PyTorch (for embedding generation)</p></li>
+<li><p>PIL (for image processing)</p></li>
+<li><p>LangChain (for text splitting)</p></li>
+<li><p>Hugging Face Transformers (for CLIP and embedding models)</p></li>
+</ul>
+</section>
+<section id="output-formats">
+<h3>Output Formats:<a class="headerlink" href="#output-formats" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Text chunks: <cite>List[str]</cite></p></li>
+<li><p>Image embeddings: <cite>List[List[float]]</cite></p></li>
+<li><p>Table embeddings: <cite>List[Dict]</cite> with keys <cite>table_id</cite>, <cite>text</cite>, and <cite>embedding</cite></p></li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.embeddings.format_table_for_embedding">
+<span class="sig-prename descclassname"><span class="pre">Modules.embeddings.</span></span><span class="sig-name descname"><span class="pre">format_table_for_embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/embeddings.html#format_table_for_embedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.embeddings.format_table_for_embedding" title="Link to this definition"></a></dt>
+<dd><p>Converts table JSON data into a structured text format.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>table_data (dict): A dictionary containing table data.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: A structured text representation of the table.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.embeddings.generate_table_embeddings">
+<span class="sig-prename descclassname"><span class="pre">Modules.embeddings.</span></span><span class="sig-name descname"><span class="pre">generate_table_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_embedding_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/embeddings.html#generate_table_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.embeddings.generate_table_embeddings" title="Link to this definition"></a></dt>
+<dd><p>Generates embeddings for tables extracted from a PDF document.</p>
+<p>This function converts each table’s data into a structured text format
+and generates embeddings using a text embedding model.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>content (dict): A dictionary containing extracted tables, where each</dt><dd><p>table has a “table_id” and “data” field.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>list: A list of dictionaries, where each dictionary contains:</dt><dd><ul class="simple">
+<li><p>“table_id” (int): The unique identifier of the table.</p></li>
+<li><p>“embedding” (list): The embedding vector of the table content.</p></li>
+<li><p>“text” (str): The formatted text representation of the table.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.embeddings.image_generate_embeddings">
+<span class="sig-prename descclassname"><span class="pre">Modules.embeddings.</span></span><span class="sig-name descname"><span class="pre">image_generate_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_processor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/embeddings.html#image_generate_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.embeddings.image_generate_embeddings" title="Link to this definition"></a></dt>
+<dd><p>Generates embeddings for a list of images using a CLIP-based model.</p>
+<p>This function processes images through a CLIP model to generate numerical
+embeddings, which can be used for similarity search, classification, or
+other vision-language tasks.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>image_paths (list of str): A list of file paths to the images.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>list of torch.Tensor: A list of image embeddings, where each embedding</dt><dd><p>is a tensor representation of the input image.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.embeddings.split_text">
+<span class="sig-prename descclassname"><span class="pre">Modules.embeddings.</span></span><span class="sig-name descname"><span class="pre">split_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/embeddings.html#split_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.embeddings.split_text" title="Link to this definition"></a></dt>
+<dd><p>Splits the input text into smaller overlapping chunks for efficient processing.</p>
+<p>This function uses a recursive character-based text splitter to divide the input
+text into chunks of a specified size, ensuring some overlap between consecutive
+chunks to maintain context continuity.</p>
+<dl>
+<dt>Args:</dt><dd><p>text (str): The input text to be split.
+chunk_size (int, optional): The maximum size of each chunk (default: 512).
+chunk_overlap (int, optional): The number of overlapping characters</p>
+<blockquote>
+<div><p>between consecutive chunks (default: 50).</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>list: A list of text chunks.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Modules.fine_tune_whisper">
+<span id="modules-fine-tune-whisper-module"></span><h2>Modules.fine_tune_whisper module<a class="headerlink" href="#module-Modules.fine_tune_whisper" title="Link to this heading"></a></h2>
+<p>This module handles the preprocessing, training, and evaluation of a speech-to-text model using the Whisper architecture from Hugging Face.</p>
+<p>The module includes the following steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Loading and processing data</strong>: Loads audio recordings and corresponding transcripts, cleans the text, and splits the audio files into smaller chunks to handle long recordings.</p></li>
+<li><p><strong>Feature extraction and tokenization</strong>: Extracts audio features (log-Mel spectrogram) and tokenizes the corresponding text for model training.</p></li>
+<li><p><strong>Model preparation</strong>: Loads the Whisper model and tokenizer, and sets up training configurations for fine-tuning.</p></li>
+<li><p><strong>Training</strong>: Uses a custom <cite>Seq2SeqTrainer</cite> with <cite>WhisperForConditionalGeneration</cite> for training the model on the preprocessed audio data.</p></li>
+<li><p><strong>Evaluation</strong>: Computes the Word Error Rate (WER) as the evaluation metric, which is used to assess the performance of the trained model.</p></li>
+</ol>
+<p>Key functions:</p>
+<ul class="simple">
+<li><p><cite>load_audio_transcripts()</cite>: Loads the audio and transcript files from specified directories.</p></li>
+<li><p><cite>clean_text()</cite>: Preprocesses and cleans the text data (e.g., removing special characters and extra spaces).</p></li>
+<li><p><cite>split_and_process_audio()</cite>: Splits long audio files into smaller chunks (with a maximum duration per chunk) while retaining the original transcripts.</p></li>
+<li><p><cite>prepare_dataset()</cite>: Processes audio samples to extract features and tokenizes the corresponding text labels for training.</p></li>
+<li><p><cite>DataCollatorSpeechSeq2SeqWithPadding</cite>: Custom data collator that applies padding to both input audio features and text labels, and ensures proper handling of padding tokens in the loss computation.</p></li>
+<li><p><cite>compute_metrics()</cite>: Computes the Word Error Rate (WER) for model evaluation by comparing predicted and reference transcripts.</p></li>
+</ul>
+<p>Dependencies:</p>
+<ul class="simple">
+<li><p><cite>transformers</cite>: For loading pre-trained models and tokenizers.</p></li>
+<li><p><cite>datasets</cite>: For dataset management and preprocessing.</p></li>
+<li><p><cite>evaluate</cite>: For evaluating the model’s performance using WER.</p></li>
+<li><p><cite>pydub</cite>: For audio processing (splitting audio files into chunks).</p></li>
+<li><p><cite>torch</cite>: For handling tensor operations and training with PyTorch.</p></li>
+<li><p><cite>sklearn</cite>: For splitting the dataset into training and test sets.</p></li>
+</ul>
+<p>Configuration:</p>
+<ul class="simple">
+<li><p>The Whisper model is fine-tuned with a max duration of 30 seconds per audio chunk.</p></li>
+<li><p>The dataset is split into training and testing sets using an 80/20 split.</p></li>
+<li><p>The model is trained with a learning rate of 1e-5, a batch size of 4, and 64 gradient accumulation steps.</p></li>
+<li><p>WER is used as the evaluation metric, and model checkpoints are saved based on WER improvement.</p></li>
+</ul>
+<p>The model and processor are saved after training for later inference and use.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Place your audio recordings in the specified <cite>audio_folder</cite> and transcripts in the <cite>transcript_folder</cite>.</p></li>
+<li><p>Run the module to preprocess the data, split audio, tokenize text, and train the Whisper model.</p></li>
+<li><p>The trained model will be saved in the <cite>whisper-small-eng</cite> directory for later use.</p></li>
+</ol>
+<dl class="py class">
+<dt class="sig sig-object py" id="Modules.fine_tune_whisper.DataCollatorSpeechSeq2SeqWithPadding">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Modules.fine_tune_whisper.</span></span><span class="sig-name descname"><span class="pre">DataCollatorSpeechSeq2SeqWithPadding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/fine_tune_whisper.html#DataCollatorSpeechSeq2SeqWithPadding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.fine_tune_whisper.DataCollatorSpeechSeq2SeqWithPadding" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A data collator for speech-to-text sequence-to-sequence models that
+applies appropriate padding to both input features and labels.</p>
+<p>This collator:
+1. Pads input audio features to ensure uniform tensor sizes.
+2. Pads tokenized label sequences while replacing padding tokens with -100
+to correctly ignore them in loss computation.
+3. Removes the beginning-of-sequence (BOS) token if it was previously added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>processor</strong> (<em>Any</em>) – A processor that includes a feature extractor for audio
+inputs and a tokenizer for text labels.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing:
+- <strong>“input_features”</strong> (<em>torch.Tensor</em>): Padded log-Mel spectrogram features.
+- <strong>“labels”</strong> (<em>torch.Tensor</em>): Padded tokenized labels with -100 for ignored positions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, torch.Tensor]</p>
+</dd>
+<dt class="field-even">Methods<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a href="#id2"><span class="problematic" id="id3">**</span></a>__call__**(<em>features: List[Dict[str, Union[List[int], torch.Tensor]]]</em>) -&gt; <em>Dict[str, torch.Tensor]</em>:</dt><dd><p>Processes a batch of input features and labels, applies necessary padding,
+and returns them as PyTorch tensors.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Modules.fine_tune_whisper.DataCollatorSpeechSeq2SeqWithPadding.processor">
+<span class="sig-name descname"><span class="pre">processor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#Modules.fine_tune_whisper.DataCollatorSpeechSeq2SeqWithPadding.processor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.fine_tune_whisper.clean_text">
+<span class="sig-prename descclassname"><span class="pre">Modules.fine_tune_whisper.</span></span><span class="sig-name descname"><span class="pre">clean_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/fine_tune_whisper.html#clean_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.fine_tune_whisper.clean_text" title="Link to this definition"></a></dt>
+<dd><p>Clean a given text string by applying standard preprocessing steps.</p>
+<p>The function performs the following operations:</p>
+<ol class="arabic simple">
+<li><p>Replaces newline characters with a space.</p></li>
+<li><p>Removes special characters, keeping only alphanumeric characters and spaces.</p></li>
+<li><p>Reduces multiple spaces to a single space and trims leading/trailing spaces.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – The input text to be cleaned.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The cleaned text.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.fine_tune_whisper.compute_metrics">
+<span class="sig-prename descclassname"><span class="pre">Modules.fine_tune_whisper.</span></span><span class="sig-name descname"><span class="pre">compute_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/fine_tune_whisper.html#compute_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.fine_tune_whisper.compute_metrics" title="Link to this definition"></a></dt>
+<dd><p>Computes the Word Error Rate (WER) for model predictions.</p>
+<p>This function processes model predictions and reference labels by:
+1. Replacing -100 values in labels with the tokenizer’s padding token ID.
+2. Decoding the predicted token sequences into text.
+3. Decoding the reference token sequences into text.
+4. Computing the Word Error Rate (WER) between predictions and references.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>pred (transformers.EvalPrediction): A prediction object containing:</dt><dd><ul class="simple">
+<li><p>pred.predictions (np.ndarray): The model’s predicted token IDs.</p></li>
+<li><p>pred.label_ids (np.ndarray): The reference token IDs (ground truth labels).</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>dict: A dictionary containing:</dt><dd><ul class="simple">
+<li><p>“wer” (float): The computed Word Error Rate (WER) as a percentage.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.fine_tune_whisper.load_audio_transcripts">
+<span class="sig-prename descclassname"><span class="pre">Modules.fine_tune_whisper.</span></span><span class="sig-name descname"><span class="pre">load_audio_transcripts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transcript_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/fine_tune_whisper.html#load_audio_transcripts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.fine_tune_whisper.load_audio_transcripts" title="Link to this definition"></a></dt>
+<dd><p>Load audio file paths and their corresponding transcript text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>audio_folder</strong> (<em>str</em>) – Path to the folder containing audio files.</p></li>
+<li><p><strong>transcript_folder</strong> (<em>str</em>) – Path to the folder containing transcript files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of dictionaries, each containing:
+- <strong>“audio”</strong> (<em>str</em>): Full path to the audio file.
+- <strong>“text”</strong> (<em>str</em>): Corresponding transcript text.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict[str, str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.fine_tune_whisper.prepare_dataset">
+<span class="sig-prename descclassname"><span class="pre">Modules.fine_tune_whisper.</span></span><span class="sig-name descname"><span class="pre">prepare_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">examples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/fine_tune_whisper.html#prepare_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.fine_tune_whisper.prepare_dataset" title="Link to this definition"></a></dt>
+<dd><p>Prepares a dataset by extracting audio features and encoding text labels.</p>
+<p>This function processes each example by:
+1. Extracting log-Mel spectrogram features from the input audio array.
+2. Encoding the target text into tokenized label IDs with padding and truncation.
+3. Removing the original “audio” and “text” fields after processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>examples</strong> (<em>dict</em>) – A dictionary containing:
+- “audio” (dict): An audio sample with an “array” key.
+- “text” (str): Corresponding transcript text.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The processed example with:
+- “input_features” (list): Extracted log-Mel spectrogram features.
+- “labels” (list): Tokenized label IDs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.fine_tune_whisper.split_and_process_audio">
+<span class="sig-prename descclassname"><span class="pre">Modules.fine_tune_whisper.</span></span><span class="sig-name descname"><span class="pre">split_and_process_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/fine_tune_whisper.html#split_and_process_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.fine_tune_whisper.split_and_process_audio" title="Link to this definition"></a></dt>
+<dd><p>Split each audio file in the dataset into smaller chunks of a specified duration,
+while maintaining the correspondence with transcripts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – A DataFrame containing audio file paths and transcripts. Expected columns:
+“audio” (file path), and “text” (transcript).</p></li>
+<li><p><strong>max_duration</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum duration per audio chunk in seconds. Defaults to 30.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing:
+- new_audio_paths (list of str): File paths of the split audio chunks.
+- new_transcripts (list of str): Corresponding transcripts for each chunk.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[list[str], list[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="modules-main-module">
+<h2>Modules.main module<a class="headerlink" href="#modules-main-module" title="Link to this heading"></a></h2>
+</section>
+<section id="module-Modules.retrieve">
+<span id="modules-retrieve-module"></span><h2>Modules.retrieve module<a class="headerlink" href="#module-Modules.retrieve" title="Link to this heading"></a></h2>
+<p>Multimodal Medical RAG Pipeline for Text, Table, and Image-Based Retrieval and Response Generation</p>
+<p>This module provides utility functions for building and operating a Retrieval-Augmented Generation (RAG) system
+designed for medical applications. The system supports multimodal inputs, including text, tables, and images,
+and integrates LangChain, Qdrant, CLIP, and Qwen2VL to retrieve and generate context-aware responses to user queries.</p>
+<p>Key Components:</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Prompt Templates:</dt><dd><ul class="simple">
+<li><p><cite>pdf_prompt</cite>: Prompt template for answering queries using PDF content (text + images).</p></li>
+<li><p><cite>audio_prompt</cite>: Prompt template for answering queries using audio transcriptions.</p></li>
+<li><p><cite>pdf_summarization</cite>: Prompt for summarizing the content of a PDF document.</p></li>
+<li><p><cite>audio_summarization</cite>: Prompt for summarizing content from audio transcriptions.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Retrieval Utilities:</dt><dd><ul class="simple">
+<li><p><cite>retrieve_text</cite>: Retrieves relevant unstructured text from a Qdrant vector store using a similarity threshold.</p></li>
+<li><p><cite>image_retrieval</cite>: Uses CLIP embeddings to search for and return relevant images based on a text query.</p></li>
+<li><p><cite>table_retrieve</cite>: Retrieves relevant tabular content from a Qdrant collection using embedded vectors.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Reranking:</dt><dd><ul class="simple">
+<li><p><cite>reranking</cite>: Combines results from text and table retrievers using <cite>MergerRetriever</cite> to form a unified context.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Multimodal Response Generation:</dt><dd><ul class="simple">
+<li><p><cite>generate_response</cite>: Formats the query and context into a prompt, processes optional images, and uses the Qwen2VL
+model to generate a coherent and medically accurate response.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<dl class="simple">
+<dt>Dependencies:</dt><dd><ul class="simple">
+<li><p>LangChain</p></li>
+<li><p>Qdrant</p></li>
+<li><p>PIL (Pillow)</p></li>
+<li><p>Torch</p></li>
+<li><p>CLIP (Hugging Face)</p></li>
+<li><p>Qwen2VL (Qwen processor + model)</p></li>
+<li><p>IPython.display (for visual display in notebooks)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Typical Use Case:
+This module can be used in a medical assistant chatbot that processes PDFs and audio recordings to answer domain-specific
+queries, leveraging retrieval-augmented generation for explainable and data-grounded responses.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.audio_prompt">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">audio_prompt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#audio_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.audio_prompt" title="Link to this definition"></a></dt>
+<dd><p>Creates a prompt template for answering medical queries based on audio transcription context.</p>
+<p>This function returns a structured LangChain PromptTemplate designed for a language model
+to generate a medically accurate response based on the transcribed content of an audio recording
+(e.g., doctor-patient conversation, medical notes).</p>
+<p>The prompt instructs the model to:
+- Analyze the medical query carefully.
+- Identify and extract only medically relevant information from the transcription.
+- Use logical, step-by-step reasoning based only on the provided content.
+- Avoid redundant information.
+- Produce a well-structured, concise medical response.
+- Return ‘No Relevant Information found’ if the answer is not present in the context.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>PromptTemplate: A LangChain PromptTemplate with placeholders for:</dt><dd><ul class="simple">
+<li><p>query (str): The user’s medical question.</p></li>
+<li><p>output (str): Transcribed text from an audio source.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.audio_summarization">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">audio_summarization</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#audio_summarization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.audio_summarization" title="Link to this definition"></a></dt>
+<dd><p>Creates a prompt template for summarizing medical audio transcriptions.</p>
+<p>This function returns a LangChain PromptTemplate designed to guide a language model
+in generating a clear and cohesive summary of transcribed audio data based on a user-provided query.</p>
+<p>The prompt instructs the model to:
+- Read the query and the transcription content.
+- Write a single, well-structured summary for the entire content.
+- Eliminate redundancy and ensure logical organization.
+- Avoid adding or fabricating any information.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>PromptTemplate: A LangChain PromptTemplate with placeholders for:</dt><dd><ul class="simple">
+<li><p>query (str): The medical query related to the audio content.</p></li>
+<li><p>output (str): The full audio transcription to be summarized.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.generate_response">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">generate_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qwen_processor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qwen_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DEVICE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#generate_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.generate_response" title="Link to this definition"></a></dt>
+<dd><p>Generates a medical response using the Qwen2VL model with both text and optional image inputs.</p>
+<p>This function constructs a formatted prompt using the provided query and retrieved text/table data.
+If images are available, they are embedded into the prompt using special tokens and processed
+alongside the text for multimodal inference with the Qwen2VL model.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>qwen_processor: Qwen2VL processor for preparing text and image inputs.
+qwen_model: Qwen2VL model used to generate the response.
+DEVICE: The device (‘cpu’ or ‘cuda’) on which the model should run.
+prompt_template (PromptTemplate): LangChain-style prompt template for formatting the input.
+query (str): The medical query from the user.
+output_text (str): Retrieved context (text or table content) relevant to the query.
+image_path (list[str], optional): List of file paths to images used in multimodal response generation.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: A clean and concise medical response generated by the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.image_retrieval">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">image_retrieval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_processor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_payload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#image_retrieval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.image_retrieval" title="Link to this definition"></a></dt>
+<dd><p>Retrieves images based on a text query using CLIP model embeddings.</p>
+<p>This function takes a text query, generates its embedding using the CLIP model,
+and performs a similarity search in a specified Qdrant collection. It returns
+the top matching images based on the query embedding and displays them.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>query (str): The text query used to search for relevant images.
+clip_processor (CLIPProcessor): The processor used to tokenize and preprocess input text for CLIP.
+clip_model (CLIPModel): The CLIP model used to generate text embeddings.
+collection_name (str): The name of the Qdrant collection containing the image embeddings.
+limit (int, optional): The maximum number of results to return (default is 3).
+with_payload (bool, optional): Whether to include metadata (e.g., filenames) with the results (default is True).
+score_threshold (float, optional): The minimum similarity score for returning results (default is 0.7).</p>
+</dd>
+<dt>Returns:</dt><dd><p>None: Displays the top matching images based on the query</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.pdf_prompt">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">pdf_prompt</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#pdf_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.pdf_prompt" title="Link to this definition"></a></dt>
+<dd><p>Creates a prompt template for answering medical queries based on PDF content.</p>
+<p>This function constructs a structured prompt intended for use with a language model
+in a medical retrieval-augmented generation (RAG) system. The prompt guides the model
+to analyze a medical query using the provided textual and visual (image) context
+extracted from a PDF document.</p>
+<p>The generated prompt instructs the model to:
+- Analyze the query carefully.
+- Extract only medically relevant information from the context.
+- Use step-by-step logical reasoning based solely on provided data.
+- Avoid repetition and assumptions.
+- Format the response clearly in bullet points.
+- Refer to images only if they are clearly relevant.
+- Return ‘No Relevant Information found’ if the answer is not present.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>PromptTemplate: A LangChain PromptTemplate instance with placeholders for:</dt><dd><ul class="simple">
+<li><p>query (str): The user’s medical question.</p></li>
+<li><p>output (str): Extracted text and table content from the PDF.</p></li>
+<li><p>num_images (int): Number of images available in the context.</p></li>
+<li><p>image_tokens (str): Visual tokens representing embedded images.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.pdf_summarization">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">pdf_summarization</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#pdf_summarization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.pdf_summarization" title="Link to this definition"></a></dt>
+<dd><p>Creates a prompt template for summarizing the content of a medical PDF document.</p>
+<p>This function returns a LangChain PromptTemplate designed to guide a language model
+in generating a faithful summary of a PDF’s contents, including both text and image references.</p>
+<p>The prompt instructs the model to:
+- Read the provided query.
+- Summarize the document content accurately.
+- Refer to attached images only if they are relevant.
+- Avoid adding or fabricating any facts not present in the content.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>PromptTemplate: A LangChain PromptTemplate with placeholders for:</dt><dd><ul class="simple">
+<li><p>query (str): The user’s request or query.</p></li>
+<li><p>output (str): Extracted text and table content from the PDF.</p></li>
+<li><p>num_images (int): Number of associated images.</p></li>
+<li><p>image_tokens (str): Visual tokens representing the attached images.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.reranking">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">reranking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_retriever</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_retriever</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#reranking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.reranking" title="Link to this definition"></a></dt>
+<dd><p>Merges and ranks documents retrieved from both text and table retrievers for a unified response.</p>
+<p>This function combines the results from a text retriever and a table retriever using a
+<cite>MergerRetriever</cite>. It then extracts and concatenates the page content from the retrieved
+documents into a single string, preserving only the relevant content for answer generation.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>query (str): The input query to search for relevant information.
+text_retriever: Retriever instance for unstructured text data.
+table_retriever: Retriever instance for structured/tabular data.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Concatenated content from all retrieved documents.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.retrieve_text">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">retrieve_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text_store</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#retrieve_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.retrieve_text" title="Link to this definition"></a></dt>
+<dd><p>Converts a text vector store into a retriever using similarity score threshold.</p>
+<p>This function wraps the given vector store with retrieval capabilities, enabling
+similarity-based search with a specified score threshold. Only documents with a
+similarity score above the threshold will be returned during retrieval.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>text_store: The Qdrant text vector store containing embedded documents.</p>
+</dd>
+<dt>Returns:</dt><dd><p>BaseRetriever: A retriever object that supports similarity-based text retrieval
+with a minimum relevance score of 0.75.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.retrieve.table_retrieve">
+<span class="sig-prename descclassname"><span class="pre">Modules.retrieve.</span></span><span class="sig-name descname"><span class="pre">table_retrieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_embedding_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/retrieve.html#table_retrieve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.retrieve.table_retrieve" title="Link to this definition"></a></dt>
+<dd><p>Initializes a retriever for tabular data stored in a Qdrant collection using similarity score threshold.</p>
+<p>This function creates a retriever from a Qdrant vector store containing table embeddings. It enables
+similarity-based search restricted to the “table_text” payload and returns only documents with a
+similarity score above the specified threshold.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>client: Qdrant client instance connected to the database.
+collection_name (str): Name of the Qdrant collection containing table embeddings.
+text_embedding_model: Embedding model used to generate table embeddings.</p>
+</dd>
+<dt>Returns:</dt><dd><p>BaseRetriever: A retriever configured to return table data with similarity score &gt;= 0.75.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Modules.store_embeddings">
+<span id="modules-store-embeddings-module"></span><h2>Modules.store_embeddings module<a class="headerlink" href="#module-Modules.store_embeddings" title="Link to this heading"></a></h2>
+<p>Qdrant-Based Embedding Storage Utilities</p>
+<p>This module provides functions for storing text, image, and table embeddings into
+Qdrant collections. It supports both memory-based and persistent Qdrant usage,
+and includes metadata storage for downstream search, retrieval, or visualization tasks.</p>
+<section id="id4">
+<h3>Key Functionalities:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Collection Management</strong>
+- <cite>create_collection(client, collection_name, vector_size)</cite>:</p>
+<blockquote>
+<div><p>Creates or resets a Qdrant collection with the specified vector size using cosine distance.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Text Embedding Storage</strong>
+- <cite>store_text(text, embedding_model, collection_name)</cite>:</p>
+<blockquote>
+<div><p>Stores embedded text documents into a Qdrant collection using LangChain’s Qdrant wrapper.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Image Embedding Storage</strong>
+- <cite>store_image_embeddings(…)</cite>:</p>
+<blockquote>
+<div><p>Stores image embeddings in Qdrant along with metadata such as image size, file path, and raw pixel data.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Table Embedding Storage</strong>
+- <cite>store_table_embeddings(…)</cite>:</p>
+<blockquote>
+<div><p>Saves tabular data embeddings in Qdrant, storing both the embedding vectors and original formatted text as metadata.</p>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="use-cases">
+<h3>Use Cases:<a class="headerlink" href="#use-cases" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Multimodal semantic search (text, image, table)</p></li>
+<li><p>Retrieval-augmented generation (RAG)</p></li>
+<li><p>Embedding-based data exploration and visualization</p></li>
+<li><p>Metadata-rich vector storage for custom AI pipelines</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>Dependencies:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Qdrant (via <cite>qdrant-client</cite> and <cite>langchain.vectorstores.Qdrant</cite>)</p></li>
+<li><p>LangChain (for text embedding integration)</p></li>
+<li><p>Python standard libraries (e.g., <cite>list</cite>, <cite>tuple</cite>, <cite>print</cite>)</p></li>
+</ul>
+</section>
+<section id="example-output">
+<h3>Example Output:<a class="headerlink" href="#example-output" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Console log of created collections</p></li>
+<li><p>Stored vectors with IDs and rich metadata</p></li>
+<li><p>Callable Qdrant vector store (for text)</p></li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.store_embeddings.create_collection">
+<span class="sig-prename descclassname"><span class="pre">Modules.store_embeddings.</span></span><span class="sig-name descname"><span class="pre">create_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/store_embeddings.html#create_collection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.store_embeddings.create_collection" title="Link to this definition"></a></dt>
+<dd><p>Creates a Qdrant collection for storing embeddings.</p>
+<p>This function checks if a collection with the specified name already exists
+in Qdrant. If it does, the existing collection is deleted before creating
+a new one with the specified vector size and cosine similarity as the
+distance metric.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>client (QdrantClient): The Qdrant client instance.
+collection_name (str): The name of the collection to create.
+vector_size (int): The dimensionality of the embedding vectors.</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.store_embeddings.store_image_embeddings">
+<span class="sig-prename descclassname"><span class="pre">Modules.store_embeddings.</span></span><span class="sig-name descname"><span class="pre">store_image_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_embeddings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_vector_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/store_embeddings.html#store_image_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.store_embeddings.store_image_embeddings" title="Link to this definition"></a></dt>
+<dd><p>Stores image embeddings and metadata in a Qdrant collection.</p>
+<p>This function creates a Qdrant collection (or overwrites it if it exists),
+then stores the provided image embeddings along with associated metadata
+such as filenames, image sizes, and pixel data.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>client (QdrantClient): The Qdrant client instance.
+image_paths (list of str): List of file paths to the images.
+image_embeddings (list): List of embedding vectors for the images.
+px (list): Pixel data for each image (optional for search, useful for metadata).
+size (tuple): Size (width, height) of the images.
+image_collection (str): Name of the Qdrant collection to create.
+image_vector_size (int): Dimensionality of the image embedding vectors.</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.store_embeddings.store_table_embeddings">
+<span class="sig-prename descclassname"><span class="pre">Modules.store_embeddings.</span></span><span class="sig-name descname"><span class="pre">store_table_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TABLE_COLLECTION</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TABLE_VECTOR_SIZE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_embeddings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/store_embeddings.html#store_table_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.store_embeddings.store_table_embeddings" title="Link to this definition"></a></dt>
+<dd><p>Stores table embeddings and metadata in a Qdrant collection.</p>
+<p>This function creates a Qdrant collection for table data (or replaces it if it already exists),
+then uploads the table embeddings along with their IDs and associated text content.</p>
+<dl>
+<dt>Args:</dt><dd><p>client (QdrantClient): The Qdrant client instance.
+TABLE_COLLECTION (str): Name of the Qdrant collection to store table embeddings.
+TABLE_VECTOR_SIZE (int): Dimensionality of the table embedding vectors.
+table_embeddings (list of dict): List of dictionaries containing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“table_id” (int): Unique identifier for each table.</p></li>
+<li><p>“embedding” (list or np.array): Embedding vector of the table.</p></li>
+<li><p>“text” (str): Text representation of the table for metadata/reference.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.store_embeddings.store_text">
+<span class="sig-prename descclassname"><span class="pre">Modules.store_embeddings.</span></span><span class="sig-name descname"><span class="pre">store_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/store_embeddings.html#store_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.store_embeddings.store_text" title="Link to this definition"></a></dt>
+<dd><p>Stores text embeddings into a Qdrant collection.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>texts (list): A list of text documents to embed and store.
+embedding_model: A model or callable that returns embeddings for the texts.
+collection_name (str): Name of the Qdrant collection to store embeddings.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Qdrant: A Qdrant vector store instance with the stored embeddings.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Modules.transcribe">
+<span id="modules-transcribe-module"></span><h2>Modules.transcribe module<a class="headerlink" href="#module-Modules.transcribe" title="Link to this heading"></a></h2>
+<p>Audio Transcription and Translation Utilities using Whisper</p>
+<p>This module provides a complete pipeline for processing long-form audio:
+splitting it into overlapping segments, transcribing with a fine-tuned Whisper model,
+and translating the transcription into another language. The outputs can be saved
+to text files for downstream tasks like summarization, captioning, or multilingual content creation.</p>
+<section id="id6">
+<h3>Key Functionalities:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Audio Chunking</strong>
+- <cite>split_audio(audio, chunk_samples)</cite>:</p>
+<blockquote>
+<div><p>Splits long audio into overlapping chunks (10% overlap) to preserve context and improve transcription continuity.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Audio Transcription</strong>
+- <cite>transcribe(audio_chunks)</cite>:</p>
+<blockquote>
+<div><p>Generates text transcriptions from a list of audio chunks using a locally fine-tuned Whisper model.
+Assumes mono audio at 16kHz sampling rate.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Transcription Saving</strong>
+- <cite>save_transcription(transcriptions)</cite>:</p>
+<blockquote>
+<div><p>Saves transcriptions to a file named <cite>transcriptions.txt</cite> with line numbers for readability.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Translation of Transcripts</strong>
+- <cite>translate_audio(transcriptions, translator)</cite>:</p>
+<blockquote>
+<div><p>Translates the list of transcribed English texts to a target language using a translator object (e.g., Deep Translator).
+Saves output to <cite>Content_translated.txt</cite>.</p>
+</div></blockquote>
+</li>
+</ol>
+</section>
+<section id="id7">
+<h3>Expected Use Cases:<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Speech-to-text applications</p></li>
+<li><p>Podcast/audio/video captioning</p></li>
+<li><p>Multilingual media workflows</p></li>
+<li><p>Real-time or batch translation of audio content</p></li>
+</ul>
+</section>
+<section id="id8">
+<h3>Dependencies:<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><cite>transformers</cite> (for Whisper model and processor)</p></li>
+<li><p><cite>torch</cite> (for model inference)</p></li>
+<li><p><cite>os</cite> (for model path handling)</p></li>
+<li><p>Optional: Deep Translator for multilingual support</p></li>
+</ul>
+</section>
+<section id="model-notes">
+<h3>Model Notes:<a class="headerlink" href="#model-notes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Uses a locally fine-tuned version of <cite>“whisper-small-eng”</cite> stored at <cite>../../whisper-small-eng</cite>.</p></li>
+<li><p>The transcription assumes English audio input by default but can be adapted to multilingual Whisper.</p></li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.transcribe.save_transcription">
+<span class="sig-prename descclassname"><span class="pre">Modules.transcribe.</span></span><span class="sig-name descname"><span class="pre">save_transcription</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcriptions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/transcribe.html#save_transcription"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.transcribe.save_transcription" title="Link to this definition"></a></dt>
+<dd><p>Saves a list of audio transcriptions to a text file.</p>
+<p>This function writes each transcription to a file named ‘transcriptions.txt’,
+numbering each entry for readability. It is typically used after transcribing
+audio using a model like Whisper.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>transcriptions (List[str]): List of transcribed text segments.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Path to the saved transcription file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.transcribe.split_audio">
+<span class="sig-prename descclassname"><span class="pre">Modules.transcribe.</span></span><span class="sig-name descname"><span class="pre">split_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/transcribe.html#split_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.transcribe.split_audio" title="Link to this definition"></a></dt>
+<dd><p>Splits a long audio signal into overlapping chunks for transcription.</p>
+<p>This function divides the input audio into smaller chunks with a 10% overlap
+between consecutive segments. This overlap helps preserve context and
+ensures smoother transitions in transcription results.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>audio (np.ndarray): The raw audio waveform array (1D).
+chunk_samples (int): Number of samples per chunk.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[np.ndarray]: A list of audio chunks with overlap.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.transcribe.transcribe">
+<span class="sig-prename descclassname"><span class="pre">Modules.transcribe.</span></span><span class="sig-name descname"><span class="pre">transcribe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_chunks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/transcribe.html#transcribe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.transcribe.transcribe" title="Link to this definition"></a></dt>
+<dd><p>Transcribes a list of audio chunks using a fine-tuned OpenAI Whisper model.</p>
+<p>This function processes audio chunks (pre-split from longer audio) and generates
+transcriptions using a custom fine-tuned version of the Whisper model. It assumes
+the audio is mono and sampled at 16kHz.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>audio_chunks (List[np.ndarray]): List of audio segments as numpy arrays.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[str]: List of transcribed strings, one per audio chunk.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.transcribe.translate_audio">
+<span class="sig-prename descclassname"><span class="pre">Modules.transcribe.</span></span><span class="sig-name descname"><span class="pre">translate_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transcriptions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/transcribe.html#translate_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.transcribe.translate_audio" title="Link to this definition"></a></dt>
+<dd><p>Translates a list of transcriptions and writes the output to a text file.</p>
+<p>This function takes in audio transcriptions (in English) and translates them
+to the target language using the provided translator object. The translated
+text is saved line by line in an output file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>transcriptions (List[str]): List of transcribed strings from audio.
+translator (Callable): A translator object with a <cite>.translate(text)</cite> method.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Path to the saved translation output file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-Modules.translate">
+<span id="modules-translate-module"></span><h2>Modules.translate module<a class="headerlink" href="#module-Modules.translate" title="Link to this heading"></a></h2>
+<p>PDF Translation and Resizing Utilities</p>
+<p>This module provides tools to preprocess and translate the text content of PDF documents
+while preserving their visual structure, layout, and style. It is especially useful for
+creating translated versions of documents without altering formatting or visuals.</p>
+<section id="id9">
+<h3>Key Functionalities:<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>PDF Resizing</strong>
+- <cite>resize_pdf(input_pdf, output_pdf, scale_factor=1.2)</cite>:</p>
+<blockquote>
+<div><p>Scales all pages of a PDF by a given factor. This is useful for enlarging the page
+space to make room for translated text that may take up more space than the original.</p>
+</div></blockquote>
+</li>
+<li><p><strong>PDF Translation</strong>
+- <cite>translate_pdf(input_pdf, output_pdf, language, translator)</cite>:</p>
+<blockquote>
+<div><p>Translates the textual content of a resized PDF using a translator (e.g., Deep Translator).
+It preserves the layout by:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>overlaying white rectangles on the original text</p></li>
+<li><p>inserting translated text as styled HTML blocks</p></li>
+<li><p>using Optional Content Groups (OCGs) to separate visual layers</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>This function supports translation into any language supported by the given translator
+and ensures clean rendering in the output PDF.</p>
+</li>
+</ol>
+</section>
+<section id="key-dependencies">
+<h3>Key Dependencies:<a class="headerlink" href="#key-dependencies" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><cite>pymupdf</cite> (for PDF manipulation)</p></li>
+<li><p><cite>deep_translator.GoogleTranslator</cite> (for translation support)</p></li>
+<li><p><cite>os</cite> (for file operations)</p></li>
+</ul>
+</section>
+<section id="text-extraction-settings">
+<h3>Text Extraction Settings:<a class="headerlink" href="#text-extraction-settings" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Text is dehyphenated and whitespace preserved for improved block-based processing.</p></li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.translate.resize_pdf">
+<span class="sig-prename descclassname"><span class="pre">Modules.translate.</span></span><span class="sig-name descname"><span class="pre">resize_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_pdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/translate.html#resize_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.translate.resize_pdf" title="Link to this definition"></a></dt>
+<dd><p>Resizes a given PDF by scaling its page dimensions by a specified factor.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>input_pdf<span class="classifier">Document</span></dt><dd><p>the PDF file to be translated.
+This should be a <cite>pymupdf</cite> Document object.</p>
+</dd>
+<dt>output_pdf<span class="classifier">str</span></dt><dd><p>Path to save the resized PDF.</p>
+</dd>
+<dt>scale_factor<span class="classifier">float, optional</span></dt><dd><p>Factor by which to scale the page size. Default is 1.2.</p>
+</dd>
+</dl>
+</section>
+<section id="behavior">
+<h3>Behavior:<a class="headerlink" href="#behavior" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Opens the input PDF and creates a new blank PDF document.</p></li>
+<li><p>Iterates through each page, resizes it by the given scale factor, and copies the content.</p></li>
+<li><p>Saves the resized PDF to the specified output path.</p></li>
+<li><p>Deletes the PDF (<cite>input_pdf</cite>) after resizing.</p></li>
+</ul>
+</section>
+<section id="returns">
+<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>str</dt><dd><p>Path to the resized PDF.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="Modules.translate.translate_pdf">
+<span class="sig-prename descclassname"><span class="pre">Modules.translate.</span></span><span class="sig-name descname"><span class="pre">translate_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_pdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Modules/translate.html#translate_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Modules.translate.translate_pdf" title="Link to this definition"></a></dt>
+<dd><p>Translates the text content of a PDF from English to a specified language while preserving layout and structure.</p>
+<section id="id10">
+<h3>Parameters<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>input_pdf<span class="classifier">str</span></dt><dd><p>Path to the input PDF (expected to be preprocessed/resized).</p>
+</dd>
+<dt>output_pdf<span class="classifier">str</span></dt><dd><p>Path where the translated PDF will be saved.</p>
+</dd>
+<dt>language<span class="classifier">str</span></dt><dd><p>Target language for translation (used for naming the optional content group).</p>
+</dd>
+<dt>translator<span class="classifier">Callable</span></dt><dd><p>A translation function or model with a <cite>.translate(text)</cite> method.</p>
+</dd>
+</dl>
+</section>
+<section id="process">
+<h3>Process<a class="headerlink" href="#process" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Opens the input PDF and creates a new blank document.</p></li>
+<li><dl class="simple">
+<dt>For each page:</dt><dd><ul>
+<li><p>Duplicates the layout and visuals of the original page.</p></li>
+<li><p>Extracts text blocks from the original.</p></li>
+<li><p>Translates each block from English to the target language.</p></li>
+<li><p>Draws a white rectangle over the original text area.</p></li>
+<li><p>Inserts the translated text using HTML formatting (to preserve style).</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Adds translated text as an optional content group (OCG).</p></li>
+<li><p>Deletes the original input PDF after saving the translated one.</p></li>
+</ul>
+</section>
+<section id="id11">
+<h3>Returns<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>str</dt><dd><p>Path to the newly saved translated PDF.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+</section>
+<section id="module-Modules">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-Modules" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Kenil Patwa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

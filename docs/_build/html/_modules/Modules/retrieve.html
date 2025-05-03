@@ -1,0 +1,550 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules.retrieve &mdash; Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Modules.html">Modules package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Modules.retrieve</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Modules.retrieve</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Multimodal Medical RAG Pipeline for Text, Table, and Image-Based Retrieval and Response Generation</span>
+
+<span class="sd">This module provides utility functions for building and operating a Retrieval-Augmented Generation (RAG) system</span>
+<span class="sd">designed for medical applications. The system supports multimodal inputs, including text, tables, and images,</span>
+<span class="sd">and integrates LangChain, Qdrant, CLIP, and Qwen2VL to retrieve and generate context-aware responses to user queries.</span>
+
+<span class="sd">Key Components:</span>
+
+<span class="sd">1. Prompt Templates:</span>
+<span class="sd">    - `pdf_prompt`: Prompt template for answering queries using PDF content (text + images).</span>
+<span class="sd">    - `audio_prompt`: Prompt template for answering queries using audio transcriptions.</span>
+<span class="sd">    - `pdf_summarization`: Prompt for summarizing the content of a PDF document.</span>
+<span class="sd">    - `audio_summarization`: Prompt for summarizing content from audio transcriptions.</span>
+
+<span class="sd">2. Retrieval Utilities:</span>
+<span class="sd">    - `retrieve_text`: Retrieves relevant unstructured text from a Qdrant vector store using a similarity threshold.</span>
+<span class="sd">    - `image_retrieval`: Uses CLIP embeddings to search for and return relevant images based on a text query.</span>
+<span class="sd">    - `table_retrieve`: Retrieves relevant tabular content from a Qdrant collection using embedded vectors.</span>
+
+<span class="sd">3. Reranking:</span>
+<span class="sd">    - `reranking`: Combines results from text and table retrievers using `MergerRetriever` to form a unified context.</span>
+
+<span class="sd">4. Multimodal Response Generation:</span>
+<span class="sd">    - `generate_response`: Formats the query and context into a prompt, processes optional images, and uses the Qwen2VL</span>
+<span class="sd">      model to generate a coherent and medically accurate response.</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">    - LangChain</span>
+<span class="sd">    - Qdrant</span>
+<span class="sd">    - PIL (Pillow)</span>
+<span class="sd">    - Torch</span>
+<span class="sd">    - CLIP (Hugging Face)</span>
+<span class="sd">    - Qwen2VL (Qwen processor + model)</span>
+<span class="sd">    - IPython.display (for visual display in notebooks)</span>
+
+<span class="sd">Typical Use Case:</span>
+<span class="sd">This module can be used in a medical assistant chatbot that processes PDFs and audio recordings to answer domain-specific</span>
+<span class="sd">queries, leveraging retrieval-augmented generation for explainable and data-grounded responses.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Third-Party Library Imports</span>
+<span class="kn">import</span> <span class="nn">IPython.display</span> <span class="k">as</span> <span class="nn">display</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">langchain.prompts</span> <span class="kn">import</span> <span class="n">PromptTemplate</span>
+<span class="kn">from</span> <span class="nn">langchain.retrievers</span> <span class="kn">import</span> <span class="n">MergerRetriever</span>
+
+<span class="c1"># LangChain and Vector Store Libraries</span>
+<span class="kn">from</span> <span class="nn">langchain_community.vectorstores</span> <span class="kn">import</span> <span class="n">Qdrant</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">qwen_vl_utils</span> <span class="kn">import</span> <span class="n">process_vision_info</span>
+
+
+<div class="viewcode-block" id="pdf_prompt">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.pdf_prompt">[docs]</a>
+<span class="k">def</span> <span class="nf">pdf_prompt</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a prompt template for answering medical queries based on PDF content.</span>
+
+<span class="sd">    This function constructs a structured prompt intended for use with a language model</span>
+<span class="sd">    in a medical retrieval-augmented generation (RAG) system. The prompt guides the model</span>
+<span class="sd">    to analyze a medical query using the provided textual and visual (image) context</span>
+<span class="sd">    extracted from a PDF document.</span>
+
+<span class="sd">    The generated prompt instructs the model to:</span>
+<span class="sd">    - Analyze the query carefully.</span>
+<span class="sd">    - Extract only medically relevant information from the context.</span>
+<span class="sd">    - Use step-by-step logical reasoning based solely on provided data.</span>
+<span class="sd">    - Avoid repetition and assumptions.</span>
+<span class="sd">    - Format the response clearly in bullet points.</span>
+<span class="sd">    - Refer to images only if they are clearly relevant.</span>
+<span class="sd">    - Return &#39;No Relevant Information found&#39; if the answer is not present.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        PromptTemplate: A LangChain PromptTemplate instance with placeholders for:</span>
+<span class="sd">            - query (str): The user&#39;s medical question.</span>
+<span class="sd">            - output (str): Extracted text and table content from the PDF.</span>
+<span class="sd">            - num_images (int): Number of images available in the context.</span>
+<span class="sd">            - image_tokens (str): Visual tokens representing embedded images.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+        <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="s2">&quot;num_images&quot;</span><span class="p">,</span> <span class="s2">&quot;image_tokens&quot;</span><span class="p">],</span>
+        <span class="n">template</span><span class="o">=</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;You are a licensed medical professional. </span>
+<span class="sd">            Your task is to analyze the following medical query using the provided context and relevant images, if applicable.</span>
+<span class="sd">            Follow these steps:</span>
+<span class="sd">            1. Analyze the query: Understand what is being asked.</span>
+<span class="sd">            2. Examine the context: Identify and extract only the medically relevant facts from the context.</span>
+<span class="sd">            3. Reason step-by-step: Think logically and explain your reasoning based solely on the information provided.</span>
+<span class="sd">            4. If the same information appears multiple times in different forms mention it only once in your answer.</span>
+<span class="sd">            5. Write a final answer: Generate a clear, concise, well-strucured, and accurate medical response in bullet points.</span>
+
+<span class="sd">            Important Instructions:</span>
+<span class="sd">            - Do not add, assume, or invent any facts.</span>
+<span class="sd">            - Only refer to images if they are clearly relevant to the query.</span>
+<span class="sd">            - You cannot repeat the same information in the answer.</span>
+<span class="sd">            - If the answer cannot be found in the context, respond with exactly: No Relevant Information found.</span>
+<span class="sd">            Query:</span>
+<span class="sd">            {query}</span>
+
+<span class="sd">            Context:</span>
+<span class="sd">            {output}</span>
+
+<span class="sd">            {num_images} image(s) provided.</span>
+<span class="sd">            Image tokens:</span>
+<span class="sd">            {image_tokens}</span>
+
+<span class="sd">            Step-by-Step Reasoning:</span>
+
+<span class="sd">            Answer:&quot;&quot;&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">prompt_template</span></div>
+
+
+
+<div class="viewcode-block" id="audio_prompt">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.audio_prompt">[docs]</a>
+<span class="k">def</span> <span class="nf">audio_prompt</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a prompt template for answering medical queries based on audio transcription context.</span>
+
+<span class="sd">    This function returns a structured LangChain PromptTemplate designed for a language model</span>
+<span class="sd">    to generate a medically accurate response based on the transcribed content of an audio recording</span>
+<span class="sd">    (e.g., doctor-patient conversation, medical notes).</span>
+
+<span class="sd">    The prompt instructs the model to:</span>
+<span class="sd">    - Analyze the medical query carefully.</span>
+<span class="sd">    - Identify and extract only medically relevant information from the transcription.</span>
+<span class="sd">    - Use logical, step-by-step reasoning based only on the provided content.</span>
+<span class="sd">    - Avoid redundant information.</span>
+<span class="sd">    - Produce a well-structured, concise medical response.</span>
+<span class="sd">    - Return &#39;No Relevant Information found&#39; if the answer is not present in the context.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        PromptTemplate: A LangChain PromptTemplate with placeholders for:</span>
+<span class="sd">            - query (str): The user&#39;s medical question.</span>
+<span class="sd">            - output (str): Transcribed text from an audio source.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prompt_template</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+        <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">],</span>
+        <span class="n">template</span><span class="o">=</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;You are a licensed medical professional. </span>
+<span class="sd">            Your task is to analyze the following medical query using the provided context.</span>
+<span class="sd">            Follow these steps:</span>
+<span class="sd">            1. Analyze the query: Understand what is being asked.</span>
+<span class="sd">            2. Examine the context: Identify and extract only the medically relevant facts from the context.</span>
+<span class="sd">            3. Reason step-by-step: Think logically and explain your reasoning based solely on the information provided.</span>
+<span class="sd">            4. Remove Redundancy: If the same information appears multiple times in different forms mention it only once in your answer.</span>
+<span class="sd">            5. Write a final answer: Summarize a clear, concise, well-strucured, and accurate medical response.</span>
+
+<span class="sd">            Important Instructions:</span>
+<span class="sd">            - Do not add, assume, or invent any facts.</span>
+<span class="sd">            - If the answer cannot be found in the context, respond with exactly: No Relevant Information found.</span>
+<span class="sd">            Query:</span>
+<span class="sd">            {query}</span>
+
+<span class="sd">            Context:</span>
+<span class="sd">            {output}</span>
+
+<span class="sd">            Step-by-Step Reasoning:</span>
+
+<span class="sd">            Answer:&quot;&quot;&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">prompt_template</span></div>
+
+
+
+<div class="viewcode-block" id="pdf_summarization">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.pdf_summarization">[docs]</a>
+<span class="k">def</span> <span class="nf">pdf_summarization</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a prompt template for summarizing the content of a medical PDF document.</span>
+
+<span class="sd">    This function returns a LangChain PromptTemplate designed to guide a language model</span>
+<span class="sd">    in generating a faithful summary of a PDF&#39;s contents, including both text and image references.</span>
+
+<span class="sd">    The prompt instructs the model to:</span>
+<span class="sd">    - Read the provided query.</span>
+<span class="sd">    - Summarize the document content accurately.</span>
+<span class="sd">    - Refer to attached images only if they are relevant.</span>
+<span class="sd">    - Avoid adding or fabricating any facts not present in the content.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        PromptTemplate: A LangChain PromptTemplate with placeholders for:</span>
+<span class="sd">            - query (str): The user&#39;s request or query.</span>
+<span class="sd">            - output (str): Extracted text and table content from the PDF.</span>
+<span class="sd">            - num_images (int): Number of associated images.</span>
+<span class="sd">            - image_tokens (str): Visual tokens representing the attached images.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pdf_summarize_template</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+        <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="s2">&quot;num_images&quot;</span><span class="p">,</span> <span class="s2">&quot;image_tokens&quot;</span><span class="p">],</span>
+        <span class="n">template</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Summarize the content of the PDF document&quot;</span>
+            <span class="s2">&quot;Do not add or invent any information of fact of your own.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Query:</span><span class="se">\n</span><span class="si">{query}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;content:</span><span class="se">\n</span><span class="si">{output}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="si">{num_images}</span><span class="s2"> image(s) attached:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;</span><span class="si">{image_tokens}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Answer:&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">pdf_summarize_template</span></div>
+
+
+
+<div class="viewcode-block" id="audio_summarization">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.audio_summarization">[docs]</a>
+<span class="k">def</span> <span class="nf">audio_summarization</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a prompt template for summarizing medical audio transcriptions.</span>
+
+<span class="sd">    This function returns a LangChain PromptTemplate designed to guide a language model</span>
+<span class="sd">    in generating a clear and cohesive summary of transcribed audio data based on a user-provided query.</span>
+
+<span class="sd">    The prompt instructs the model to:</span>
+<span class="sd">    - Read the query and the transcription content.</span>
+<span class="sd">    - Write a single, well-structured summary for the entire content.</span>
+<span class="sd">    - Eliminate redundancy and ensure logical organization.</span>
+<span class="sd">    - Avoid adding or fabricating any information.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        PromptTemplate: A LangChain PromptTemplate with placeholders for:</span>
+<span class="sd">            - query (str): The medical query related to the audio content.</span>
+<span class="sd">            - output (str): The full audio transcription to be summarized.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">audio_summarize_template</span> <span class="o">=</span> <span class="n">PromptTemplate</span><span class="p">(</span>
+        <span class="n">input_variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">],</span>
+        <span class="n">template</span><span class="o">=</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;You are a professional medical summarizer. Summarize the content of an audio transcriptions based on the Query.\n\n</span>
+<span class="sd">        Write **one** cohesive summary of the **entire document** \n\n</span>
+<span class="sd">        removing any duplication, and organizing it logically.\n\n</span>
+<span class="sd">        Query:\n{query}\n\n</span>
+<span class="sd">        content:\n{output}\n\n</span>
+<span class="sd">        Answer:&quot;&quot;&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">audio_summarize_template</span></div>
+
+
+
+<div class="viewcode-block" id="retrieve_text">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.retrieve_text">[docs]</a>
+<span class="k">def</span> <span class="nf">retrieve_text</span><span class="p">(</span><span class="n">text_store</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a text vector store into a retriever using similarity score threshold.</span>
+
+<span class="sd">    This function wraps the given vector store with retrieval capabilities, enabling</span>
+<span class="sd">    similarity-based search with a specified score threshold. Only documents with a</span>
+<span class="sd">    similarity score above the threshold will be returned during retrieval.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text_store: The Qdrant text vector store containing embedded documents.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        BaseRetriever: A retriever object that supports similarity-based text retrieval</span>
+<span class="sd">        with a minimum relevance score of 0.75.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">text_store</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">(</span>
+        <span class="n">search_type</span><span class="o">=</span><span class="s2">&quot;similarity_score_threshold&quot;</span><span class="p">,</span>
+        <span class="n">search_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;score_threshold&quot;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="image_retrieval">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.image_retrieval">[docs]</a>
+<span class="k">def</span> <span class="nf">image_retrieval</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">,</span>
+    <span class="n">query</span><span class="p">,</span>
+    <span class="n">clip_processor</span><span class="p">,</span>
+    <span class="n">clip_model</span><span class="p">,</span>
+    <span class="n">collection_name</span><span class="p">,</span>
+    <span class="n">limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">with_payload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">score_threshold</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves images based on a text query using CLIP model embeddings.</span>
+
+<span class="sd">    This function takes a text query, generates its embedding using the CLIP model,</span>
+<span class="sd">    and performs a similarity search in a specified Qdrant collection. It returns</span>
+<span class="sd">    the top matching images based on the query embedding and displays them.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        query (str): The text query used to search for relevant images.</span>
+<span class="sd">        clip_processor (CLIPProcessor): The processor used to tokenize and preprocess input text for CLIP.</span>
+<span class="sd">        clip_model (CLIPModel): The CLIP model used to generate text embeddings.</span>
+<span class="sd">        collection_name (str): The name of the Qdrant collection containing the image embeddings.</span>
+<span class="sd">        limit (int, optional): The maximum number of results to return (default is 3).</span>
+<span class="sd">        with_payload (bool, optional): Whether to include metadata (e.g., filenames) with the results (default is True).</span>
+<span class="sd">        score_threshold (float, optional): The minimum similarity score for returning results (default is 0.7).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None: Displays the top matching images based on the query</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">input_text</span> <span class="o">=</span> <span class="n">clip_processor</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">[</span><span class="n">query</span><span class="p">],</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">text_embedding</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">clip_model</span><span class="o">.</span><span class="n">get_text_features</span><span class="p">(</span><span class="o">**</span><span class="n">input_text</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="n">results_with_scores</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+        <span class="n">collection_name</span><span class="o">=</span><span class="n">collection_name</span><span class="p">,</span>
+        <span class="n">query_vector</span><span class="o">=</span><span class="n">text_embedding</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+        <span class="n">with_payload</span><span class="o">=</span><span class="n">with_payload</span><span class="p">,</span>  <span class="c1"># Retrieve metadata (e.g., filenames)</span>
+        <span class="n">score_threshold</span><span class="o">=</span><span class="n">score_threshold</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results_with_scores</span><span class="p">]</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+            <span class="n">display</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">images</span></div>
+
+
+
+<div class="viewcode-block" id="table_retrieve">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.table_retrieve">[docs]</a>
+<span class="k">def</span> <span class="nf">table_retrieve</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">text_embedding_model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes a retriever for tabular data stored in a Qdrant collection using similarity score threshold.</span>
+
+<span class="sd">    This function creates a retriever from a Qdrant vector store containing table embeddings. It enables</span>
+<span class="sd">    similarity-based search restricted to the &quot;table_text&quot; payload and returns only documents with a</span>
+<span class="sd">    similarity score above the specified threshold.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client: Qdrant client instance connected to the database.</span>
+<span class="sd">        collection_name (str): Name of the Qdrant collection containing table embeddings.</span>
+<span class="sd">        text_embedding_model: Embedding model used to generate table embeddings.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        BaseRetriever: A retriever configured to return table data with similarity score &gt;= 0.75.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Qdrant</span><span class="p">(</span>
+        <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+        <span class="n">collection_name</span><span class="o">=</span><span class="n">collection_name</span><span class="p">,</span>
+        <span class="n">embeddings</span><span class="o">=</span><span class="n">text_embedding_model</span><span class="p">,</span>
+        <span class="n">content_payload_key</span><span class="o">=</span><span class="s2">&quot;table_text&quot;</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">(</span>
+        <span class="n">search_type</span><span class="o">=</span><span class="s2">&quot;similarity_score_threshold&quot;</span><span class="p">,</span>
+        <span class="n">search_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;score_threshold&quot;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">},</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reranking">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.reranking">[docs]</a>
+<span class="k">def</span> <span class="nf">reranking</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">text_retriever</span><span class="p">,</span> <span class="n">table_retriever</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merges and ranks documents retrieved from both text and table retrievers for a unified response.</span>
+
+<span class="sd">    This function combines the results from a text retriever and a table retriever using a</span>
+<span class="sd">    `MergerRetriever`. It then extracts and concatenates the page content from the retrieved</span>
+<span class="sd">    documents into a single string, preserving only the relevant content for answer generation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        query (str): The input query to search for relevant information.</span>
+<span class="sd">        text_retriever: Retriever instance for unstructured text data.</span>
+<span class="sd">        table_retriever: Retriever instance for structured/tabular data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Concatenated content from all retrieved documents.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">merge_retriever</span> <span class="o">=</span> <span class="n">MergerRetriever</span><span class="p">(</span>
+        <span class="n">retrievers</span><span class="o">=</span><span class="p">[</span><span class="n">text_retriever</span><span class="p">,</span> <span class="n">table_retriever</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">retrieved_docs</span> <span class="o">=</span> <span class="n">merge_retriever</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">retrieved_docs</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="generate_response">
+<a class="viewcode-back" href="../../Modules.html#Modules.retrieve.generate_response">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_response</span><span class="p">(</span>
+    <span class="n">qwen_processor</span><span class="p">,</span>
+    <span class="n">qwen_model</span><span class="p">,</span>
+    <span class="n">DEVICE</span><span class="p">,</span>
+    <span class="n">prompt_template</span><span class="p">,</span>
+    <span class="n">query</span><span class="p">,</span>
+    <span class="n">output_text</span><span class="p">,</span>
+    <span class="n">image_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a medical response using the Qwen2VL model with both text and optional image inputs.</span>
+
+<span class="sd">    This function constructs a formatted prompt using the provided query and retrieved text/table data.</span>
+<span class="sd">    If images are available, they are embedded into the prompt using special tokens and processed</span>
+<span class="sd">    alongside the text for multimodal inference with the Qwen2VL model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        qwen_processor: Qwen2VL processor for preparing text and image inputs.</span>
+<span class="sd">        qwen_model: Qwen2VL model used to generate the response.</span>
+<span class="sd">        DEVICE: The device (&#39;cpu&#39; or &#39;cuda&#39;) on which the model should run.</span>
+<span class="sd">        prompt_template (PromptTemplate): LangChain-style prompt template for formatting the input.</span>
+<span class="sd">        query (str): The medical query from the user.</span>
+<span class="sd">        output_text (str): Retrieved context (text or table content) relevant to the query.</span>
+<span class="sd">        image_path (list[str], optional): List of file paths to images used in multimodal response generation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A clean and concise medical response generated by the model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Format the prompt using LangChain template</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">image_tokens</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">image_path</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">image_path</span><span class="p">:</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+        <span class="n">image_tokens</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;&lt;|image|&gt;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">=</span><span class="n">output_text</span><span class="p">,</span>
+        <span class="n">num_images</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">)</span> <span class="k">if</span> <span class="n">images</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">image_tokens</span><span class="o">=</span><span class="n">image_tokens</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">conversation</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+    <span class="p">]</span>
+    <span class="n">image_inputs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">process_vision_info</span><span class="p">(</span><span class="n">conversation</span><span class="p">)</span>
+    <span class="c1"># Prepare the inputs for the model</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">qwen_processor</span><span class="p">(</span>
+        <span class="n">text</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span> <span class="n">images</span><span class="o">=</span><span class="n">image_inputs</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
+    <span class="c1"># Generate the output from the model</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">generated_ids</span> <span class="o">=</span> <span class="n">qwen_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">inputs</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">512</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Decode the generated tokens to text</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">qwen_processor</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+        <span class="n">generated_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">summary_start</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Answer:&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;Answer:&quot;</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="n">summary_start</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">summary</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Kenil Patwa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules.embeddings &mdash; Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Modules.html">Modules package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Modules.embeddings</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Modules.embeddings</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Embeddings Utility Module for Text, Tables, and Images</span>
+
+<span class="sd">This module provides helper functions for preparing and generating embeddings</span>
+<span class="sd">from text, table data, and images—typically used in document intelligence,</span>
+<span class="sd">semantic search, or retrieval-augmented generation (RAG) pipelines.</span>
+
+<span class="sd">Key Functionalities:</span>
+<span class="sd">--------------------</span>
+<span class="sd">1. **Text Chunking**  </span>
+<span class="sd">   - `split_text(text, chunk_size=512, chunk_overlap=50)`:  </span>
+<span class="sd">     Splits raw text into overlapping chunks using LangChain&#39;s RecursiveCharacterTextSplitter,</span>
+<span class="sd">     preserving context across chunks for better embedding and retrieval.</span>
+
+<span class="sd">2. **Image Embedding Generation**  </span>
+<span class="sd">   - `image_generate_embeddings(image_paths, clip_processor, clip_model)`:  </span>
+<span class="sd">     Generates image embeddings using the CLIP model from Hugging Face. Also returns raw pixel data</span>
+<span class="sd">     and image dimensions for potential auxiliary tasks like rendering or reconstruction.</span>
+
+<span class="sd">3. **Table Text Formatting &amp; Embedding**  </span>
+<span class="sd">   - `format_table_for_embedding(table_data)`:  </span>
+<span class="sd">     Converts structured table data (usually extracted from PDFs) into a readable string format.</span>
+<span class="sd">   - `generate_table_embeddings(content, text_embedding_model)`:  </span>
+<span class="sd">     Converts all tables in a document into embeddings using a text embedding model.</span>
+<span class="sd">     Returns a list of dictionaries including the table ID, formatted table string, and its embedding vector.</span>
+
+<span class="sd">Expected Use Cases:</span>
+<span class="sd">-------------------</span>
+<span class="sd">- Embedding-based document search (RAG)</span>
+<span class="sd">- Vision-language similarity</span>
+<span class="sd">- Table understanding and semantic retrieval</span>
+<span class="sd">- Preparing multi-modal content for downstream models</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">-------------</span>
+<span class="sd">- PyTorch (for embedding generation)</span>
+<span class="sd">- PIL (for image processing)</span>
+<span class="sd">- LangChain (for text splitting)</span>
+<span class="sd">- Hugging Face Transformers (for CLIP and embedding models)</span>
+
+<span class="sd">Output Formats:</span>
+<span class="sd">---------------</span>
+<span class="sd">- Text chunks: `List[str]`</span>
+<span class="sd">- Image embeddings: `List[List[float]]`</span>
+<span class="sd">- Table embeddings: `List[Dict]` with keys `table_id`, `text`, and `embedding`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="c1"># LangChain and Vector Store Libraries</span>
+<span class="kn">from</span> <span class="nn">langchain_text_splitters</span> <span class="kn">import</span> <span class="n">RecursiveCharacterTextSplitter</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+
+<div class="viewcode-block" id="split_text">
+<a class="viewcode-back" href="../../Modules.html#Modules.embeddings.split_text">[docs]</a>
+<span class="k">def</span> <span class="nf">split_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits the input text into smaller overlapping chunks for efficient processing.</span>
+
+<span class="sd">    This function uses a recursive character-based text splitter to divide the input</span>
+<span class="sd">    text into chunks of a specified size, ensuring some overlap between consecutive</span>
+<span class="sd">    chunks to maintain context continuity.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The input text to be split.</span>
+<span class="sd">        chunk_size (int, optional): The maximum size of each chunk (default: 512).</span>
+<span class="sd">        chunk_overlap (int, optional): The number of overlapping characters</span>
+<span class="sd">                                       between consecutive chunks (default: 50).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of text chunks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text_splitter</span> <span class="o">=</span> <span class="n">RecursiveCharacterTextSplitter</span><span class="p">(</span>
+        <span class="n">chunk_size</span><span class="o">=</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="o">=</span><span class="n">chunk_overlap</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">text_splitter</span><span class="o">.</span><span class="n">split_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="image_generate_embeddings">
+<a class="viewcode-back" href="../../Modules.html#Modules.embeddings.image_generate_embeddings">[docs]</a>
+<span class="k">def</span> <span class="nf">image_generate_embeddings</span><span class="p">(</span><span class="n">image_paths</span><span class="p">,</span> <span class="n">clip_processor</span><span class="p">,</span> <span class="n">clip_model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates embeddings for a list of images using a CLIP-based model.</span>
+
+<span class="sd">    This function processes images through a CLIP model to generate numerical</span>
+<span class="sd">    embeddings, which can be used for similarity search, classification, or</span>
+<span class="sd">    other vision-language tasks.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        image_paths (list of str): A list of file paths to the images.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list of torch.Tensor: A list of image embeddings, where each embedding</span>
+<span class="sd">                              is a tensor representation of the input image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image_embeddings</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">img_path</span> <span class="ow">in</span> <span class="n">image_paths</span><span class="p">:</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span>  <span class="c1"># Load image</span>
+        <span class="n">input_image</span> <span class="o">=</span> <span class="n">clip_processor</span><span class="p">(</span>
+            <span class="n">images</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
+        <span class="p">)</span>  <span class="c1"># Preprocess</span>
+        <span class="n">px</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">getdata</span><span class="p">())</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">image_features</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">clip_model</span><span class="o">.</span><span class="n">get_image_features</span><span class="p">(</span><span class="o">**</span><span class="n">input_image</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>  <span class="c1"># Generate embeddings</span>
+        <span class="n">image_embeddings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image_features</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">image_embeddings</span><span class="p">,</span> <span class="n">px</span><span class="p">,</span> <span class="n">size</span></div>
+
+
+
+<div class="viewcode-block" id="format_table_for_embedding">
+<a class="viewcode-back" href="../../Modules.html#Modules.embeddings.format_table_for_embedding">[docs]</a>
+<span class="k">def</span> <span class="nf">format_table_for_embedding</span><span class="p">(</span><span class="n">table_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts table JSON data into a structured text format.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        table_data (dict): A dictionary containing table data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A structured text representation of the table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">table_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table_data</span><span class="p">:</span>
+        <span class="n">row_text</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="n">table_text</span> <span class="o">+=</span> <span class="n">row_text</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">table_text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># Remove trailing newline</span></div>
+
+
+
+<div class="viewcode-block" id="generate_table_embeddings">
+<a class="viewcode-back" href="../../Modules.html#Modules.embeddings.generate_table_embeddings">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_table_embeddings</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">text_embedding_model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates embeddings for tables extracted from a PDF document.</span>
+
+<span class="sd">    This function converts each table&#39;s data into a structured text format</span>
+<span class="sd">    and generates embeddings using a text embedding model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        content (dict): A dictionary containing extracted tables, where each</span>
+<span class="sd">                        table has a &quot;table_id&quot; and &quot;data&quot; field.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of dictionaries, where each dictionary contains:</span>
+<span class="sd">            - &quot;table_id&quot; (int): The unique identifier of the table.</span>
+<span class="sd">            - &quot;embedding&quot; (list): The embedding vector of the table content.</span>
+<span class="sd">            - &quot;text&quot; (str): The formatted text representation of the table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">table_embeddings</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;tables&quot;</span><span class="p">]:</span>
+        <span class="n">table_text</span> <span class="o">=</span> <span class="n">format_table_for_embedding</span><span class="p">(</span>
+            <span class="n">table</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="p">)</span>  <span class="c1"># Convert to text</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="n">text_embedding_model</span><span class="o">.</span><span class="n">embed_query</span><span class="p">(</span>
+            <span class="n">table_text</span>
+        <span class="p">)</span>  <span class="c1"># Generate embedding</span>
+        <span class="n">table_embeddings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;table_id&quot;</span><span class="p">:</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;table_id&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;embedding&quot;</span><span class="p">:</span> <span class="n">embedding</span><span class="p">,</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">table_text</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">table_embeddings</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Kenil Patwa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

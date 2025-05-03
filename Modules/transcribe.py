@@ -43,7 +43,7 @@ Dependencies:
 
 Model Notes:
 ------------
-- Uses a locally fine-tuned version of `"whisper-small-eng"` stored at `../whisper-small-eng`.
+- Uses a locally fine-tuned version of `"whisper-small-eng"` stored at `../../whisper-small-eng`.
 - The transcription assumes English audio input by default but can be adapted to multilingual Whisper.
 
 """
@@ -54,7 +54,7 @@ import torch
 from transformers import WhisperForConditionalGeneration, WhisperProcessor
 
 # Load fine-tuned model
-model_path = os.path.abspath("../whisper-small-eng")
+model_path = os.path.abspath("../../whisper-small-eng")
 model = WhisperForConditionalGeneration.from_pretrained(model_path)
 processor = WhisperProcessor.from_pretrained(model_path, use_fast=True)
 

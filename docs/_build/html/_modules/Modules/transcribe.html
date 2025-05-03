@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules.transcribe &mdash; Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Modules.html">Modules package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Modules.transcribe</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Modules.transcribe</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Audio Transcription and Translation Utilities using Whisper</span>
+
+<span class="sd">This module provides a complete pipeline for processing long-form audio:</span>
+<span class="sd">splitting it into overlapping segments, transcribing with a fine-tuned Whisper model,</span>
+<span class="sd">and translating the transcription into another language. The outputs can be saved</span>
+<span class="sd">to text files for downstream tasks like summarization, captioning, or multilingual content creation.</span>
+
+<span class="sd">Key Functionalities:</span>
+<span class="sd">--------------------</span>
+
+<span class="sd">1. **Audio Chunking**</span>
+<span class="sd">   - `split_audio(audio, chunk_samples)`:</span>
+<span class="sd">     Splits long audio into overlapping chunks (10% overlap) to preserve context and improve transcription continuity.</span>
+
+<span class="sd">2. **Audio Transcription**</span>
+<span class="sd">   - `transcribe(audio_chunks)`:</span>
+<span class="sd">     Generates text transcriptions from a list of audio chunks using a locally fine-tuned Whisper model.</span>
+<span class="sd">     Assumes mono audio at 16kHz sampling rate.</span>
+
+<span class="sd">3. **Transcription Saving**</span>
+<span class="sd">   - `save_transcription(transcriptions)`:</span>
+<span class="sd">     Saves transcriptions to a file named `transcriptions.txt` with line numbers for readability.</span>
+
+<span class="sd">4. **Translation of Transcripts**</span>
+<span class="sd">   - `translate_audio(transcriptions, translator)`:</span>
+<span class="sd">     Translates the list of transcribed English texts to a target language using a translator object (e.g., Deep Translator).</span>
+<span class="sd">     Saves output to `Content_translated.txt`.</span>
+
+<span class="sd">Expected Use Cases:</span>
+<span class="sd">-------------------</span>
+<span class="sd">- Speech-to-text applications</span>
+<span class="sd">- Podcast/audio/video captioning</span>
+<span class="sd">- Multilingual media workflows</span>
+<span class="sd">- Real-time or batch translation of audio content</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">-------------</span>
+<span class="sd">- `transformers` (for Whisper model and processor)</span>
+<span class="sd">- `torch` (for model inference)</span>
+<span class="sd">- `os` (for model path handling)</span>
+<span class="sd">- Optional: Deep Translator for multilingual support</span>
+
+<span class="sd">Model Notes:</span>
+<span class="sd">------------</span>
+<span class="sd">- Uses a locally fine-tuned version of `&quot;whisper-small-eng&quot;` stored at `../../whisper-small-eng`.</span>
+<span class="sd">- The transcription assumes English audio input by default but can be adapted to multilingual Whisper.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">WhisperForConditionalGeneration</span><span class="p">,</span> <span class="n">WhisperProcessor</span>
+
+<span class="c1"># Load fine-tuned model</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;../../whisper-small-eng&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">WhisperForConditionalGeneration</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+<span class="n">processor</span> <span class="o">=</span> <span class="n">WhisperProcessor</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">use_fast</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1"># Ensure the model is in evaluation mode</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="split_audio">
+<a class="viewcode-back" href="../../Modules.html#Modules.transcribe.split_audio">[docs]</a>
+<span class="k">def</span> <span class="nf">split_audio</span><span class="p">(</span><span class="n">audio</span><span class="p">,</span> <span class="n">chunk_samples</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Splits a long audio signal into overlapping chunks for transcription.</span>
+
+<span class="sd">    This function divides the input audio into smaller chunks with a 10% overlap</span>
+<span class="sd">    between consecutive segments. This overlap helps preserve context and</span>
+<span class="sd">    ensures smoother transitions in transcription results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        audio (np.ndarray): The raw audio waveform array (1D).</span>
+<span class="sd">        chunk_samples (int): Number of samples per chunk.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[np.ndarray]: A list of audio chunks with overlap.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stride</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">chunk_samples</span><span class="p">)</span>  <span class="c1"># 10% overlap to ensure smooth merging</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">audio</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">chunk_samples</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio</span><span class="p">),</span> <span class="n">chunk_samples</span> <span class="o">-</span> <span class="n">stride</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">chunks</span></div>
+
+
+
+<div class="viewcode-block" id="transcribe">
+<a class="viewcode-back" href="../../Modules.html#Modules.transcribe.transcribe">[docs]</a>
+<span class="k">def</span> <span class="nf">transcribe</span><span class="p">(</span><span class="n">audio_chunks</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transcribes a list of audio chunks using a fine-tuned OpenAI Whisper model.</span>
+
+<span class="sd">    This function processes audio chunks (pre-split from longer audio) and generates</span>
+<span class="sd">    transcriptions using a custom fine-tuned version of the Whisper model. It assumes</span>
+<span class="sd">    the audio is mono and sampled at 16kHz.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        audio_chunks (List[np.ndarray]): List of audio segments as numpy arrays.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[str]: List of transcribed strings, one per audio chunk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">transcriptions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">audio_chunks</span><span class="p">):</span>
+        <span class="n">input_features</span> <span class="o">=</span> <span class="n">processor</span><span class="p">(</span>
+            <span class="n">chunk</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">16000</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">input_features</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">predicted_ids</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">input_features</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">)</span>
+
+        <span class="n">transcription</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">batch_decode</span><span class="p">(</span>
+            <span class="n">predicted_ids</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">transcriptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transcription</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">transcriptions</span></div>
+
+
+
+<div class="viewcode-block" id="save_transcription">
+<a class="viewcode-back" href="../../Modules.html#Modules.transcribe.save_transcription">[docs]</a>
+<span class="k">def</span> <span class="nf">save_transcription</span><span class="p">(</span><span class="n">transcriptions</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Saves a list of audio transcriptions to a text file.</span>
+
+<span class="sd">    This function writes each transcription to a file named &#39;transcriptions.txt&#39;,</span>
+<span class="sd">    numbering each entry for readability. It is typically used after transcribing</span>
+<span class="sd">    audio using a model like Whisper.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        transcriptions (List[str]): List of transcribed text segments.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Path to the saved transcription file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_file</span> <span class="o">=</span> <span class="s2">&quot;transcriptions.txt&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">transcriptions</span><span class="p">):</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ind</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2"> </span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="translate_audio">
+<a class="viewcode-back" href="../../Modules.html#Modules.transcribe.translate_audio">[docs]</a>
+<span class="k">def</span> <span class="nf">translate_audio</span><span class="p">(</span><span class="n">transcriptions</span><span class="p">,</span> <span class="n">translator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translates a list of transcriptions and writes the output to a text file.</span>
+
+<span class="sd">    This function takes in audio transcriptions (in English) and translates them</span>
+<span class="sd">    to the target language using the provided translator object. The translated</span>
+<span class="sd">    text is saved line by line in an output file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        transcriptions (List[str]): List of transcribed strings from audio.</span>
+<span class="sd">        translator (Callable): A translator object with a `.translate(text)` method.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Path to the saved translation output file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_file_translated</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Content_translated.txt&quot;</span>  <span class="c1"># File to save translations</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file_translated</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">transcriptions</span><span class="p">):</span>
+            <span class="n">translation</span> <span class="o">=</span> <span class="n">translator</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+                <span class="n">i</span>
+            <span class="p">)</span>  <span class="c1"># Translate each transcription</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ind</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">translation</span><span class="si">}</span><span class="s2"> </span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>  <span class="c1"># Write each translation to the file</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Kenil Patwa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

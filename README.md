@@ -197,7 +197,7 @@ qdrant-client, streamlit
 
 ## Installation & Setup
 ```bash
-git clone https://github.com/YourUsername/Masters-Project.git
+git clone https://github.com/kpatwa153/Masters-Project.git
 cd Masters-Project
 python3 -m venv venv
 source venv/bin/activate      # Windows: venv\Scripts\activate

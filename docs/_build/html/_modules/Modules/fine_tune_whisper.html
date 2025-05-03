@@ -1,0 +1,581 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules.fine_tune_whisper &mdash; Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Modules.html">Modules package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Modules.fine_tune_whisper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Modules.fine_tune_whisper</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module handles the preprocessing, training, and evaluation of a speech-to-text model using the Whisper architecture from Hugging Face.</span>
+
+<span class="sd">The module includes the following steps:</span>
+
+<span class="sd">1. **Loading and processing data**: Loads audio recordings and corresponding transcripts, cleans the text, and splits the audio files into smaller chunks to handle long recordings.</span>
+
+<span class="sd">2. **Feature extraction and tokenization**: Extracts audio features (log-Mel spectrogram) and tokenizes the corresponding text for model training.</span>
+
+<span class="sd">3. **Model preparation**: Loads the Whisper model and tokenizer, and sets up training configurations for fine-tuning.</span>
+
+<span class="sd">4. **Training**: Uses a custom `Seq2SeqTrainer` with `WhisperForConditionalGeneration` for training the model on the preprocessed audio data.</span>
+
+<span class="sd">5. **Evaluation**: Computes the Word Error Rate (WER) as the evaluation metric, which is used to assess the performance of the trained model.</span>
+
+<span class="sd">Key functions:</span>
+
+<span class="sd">- `load_audio_transcripts()`: Loads the audio and transcript files from specified directories.</span>
+
+<span class="sd">- `clean_text()`: Preprocesses and cleans the text data (e.g., removing special characters and extra spaces).</span>
+
+<span class="sd">- `split_and_process_audio()`: Splits long audio files into smaller chunks (with a maximum duration per chunk) while retaining the original transcripts.</span>
+
+<span class="sd">- `prepare_dataset()`: Processes audio samples to extract features and tokenizes the corresponding text labels for training.</span>
+
+<span class="sd">- `DataCollatorSpeechSeq2SeqWithPadding`: Custom data collator that applies padding to both input audio features and text labels, and ensures proper handling of padding tokens in the loss computation.</span>
+
+<span class="sd">- `compute_metrics()`: Computes the Word Error Rate (WER) for model evaluation by comparing predicted and reference transcripts.</span>
+
+<span class="sd">Dependencies:</span>
+
+<span class="sd">- `transformers`: For loading pre-trained models and tokenizers.</span>
+
+<span class="sd">- `datasets`: For dataset management and preprocessing.</span>
+
+<span class="sd">- `evaluate`: For evaluating the model&#39;s performance using WER.</span>
+
+<span class="sd">- `pydub`: For audio processing (splitting audio files into chunks).</span>
+
+<span class="sd">- `torch`: For handling tensor operations and training with PyTorch.</span>
+
+<span class="sd">- `sklearn`: For splitting the dataset into training and test sets.</span>
+
+<span class="sd">Configuration:</span>
+
+<span class="sd">- The Whisper model is fine-tuned with a max duration of 30 seconds per audio chunk.</span>
+
+<span class="sd">- The dataset is split into training and testing sets using an 80/20 split.</span>
+
+<span class="sd">- The model is trained with a learning rate of 1e-5, a batch size of 4, and 64 gradient accumulation steps.</span>
+
+<span class="sd">- WER is used as the evaluation metric, and model checkpoints are saved based on WER improvement.</span>
+
+<span class="sd">The model and processor are saved after training for later inference and use.</span>
+
+<span class="sd">Usage:</span>
+
+<span class="sd">1. Place your audio recordings in the specified `audio_folder` and transcripts in the `transcript_folder`.</span>
+
+<span class="sd">2. Run the module to preprocess the data, split audio, tokenize text, and train the Whisper model.</span>
+
+<span class="sd">3. The trained model will be saved in the `whisper-small-eng` directory for later use.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># pip install jiwer to use `wer` evaluation metrics</span>
+<span class="c1"># Importing the required libraries</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">evaluate</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">Audio</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">pydub</span> <span class="kn">import</span> <span class="n">AudioSegment</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Seq2SeqTrainer</span><span class="p">,</span>
+    <span class="n">Seq2SeqTrainingArguments</span><span class="p">,</span>
+    <span class="n">WhisperFeatureExtractor</span><span class="p">,</span>
+    <span class="n">WhisperForConditionalGeneration</span><span class="p">,</span>
+    <span class="n">WhisperProcessor</span><span class="p">,</span>
+    <span class="n">WhisperTokenizer</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Define the max duration per chunk (in seconds)</span>
+<span class="n">MAX_DURATION</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c1"># Whisper handles max 30s of audio well</span>
+
+<span class="c1"># defining the paths for the data</span>
+<span class="c1"># Paths</span>
+<span class="n">dataset_path</span> <span class="o">=</span> <span class="s2">&quot;../../audio_recordings&quot;</span>
+<span class="n">audio_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">,</span> <span class="s2">&quot;Audio_Recordings&quot;</span><span class="p">)</span>
+<span class="n">transcript_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">,</span> <span class="s2">&quot;transcripts&quot;</span><span class="p">)</span>
+<span class="n">audio_folder</span> <span class="o">=</span> <span class="s2">&quot;../../audio_recordings/Audio_Recordings&quot;</span>
+<span class="n">transcript_folder</span> <span class="o">=</span> <span class="s2">&quot;../../audio_recordings/Clean_Transcripts&quot;</span>
+
+
+<span class="c1"># Combining the audio and transcript files</span>
+<div class="viewcode-block" id="load_audio_transcripts">
+<a class="viewcode-back" href="../../Modules.html#Modules.fine_tune_whisper.load_audio_transcripts">[docs]</a>
+<span class="k">def</span> <span class="nf">load_audio_transcripts</span><span class="p">(</span><span class="n">audio_folder</span><span class="p">,</span> <span class="n">transcript_folder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load audio file paths and their corresponding transcript text.</span>
+
+<span class="sd">    :param audio_folder: Path to the folder containing audio files.</span>
+<span class="sd">    :type audio_folder: str</span>
+<span class="sd">    :param transcript_folder: Path to the folder containing transcript files.</span>
+<span class="sd">    :type transcript_folder: str</span>
+
+<span class="sd">    :return: A list of dictionaries, each containing:</span>
+<span class="sd">            - **&quot;audio&quot;** (*str*): Full path to the audio file.</span>
+<span class="sd">            - **&quot;text&quot;** (*str*): Corresponding transcript text.</span>
+<span class="sd">    :rtype: list[dict[str, str]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">audio_file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">audio_folder</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">audio_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mp3&quot;</span><span class="p">):</span>
+            <span class="n">transcript_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">audio_file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.txt&quot;</span>
+            <span class="n">transcript_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">transcript_folder</span><span class="p">,</span> <span class="n">transcript_file</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">transcript_path</span><span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                    <span class="n">transcript_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">transcript</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;audio&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">audio_folder</span><span class="p">,</span> <span class="n">audio_file</span><span class="p">),</span>
+                        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">transcript</span><span class="p">,</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<span class="c1"># Preprocessing the transcript data</span>
+<div class="viewcode-block" id="clean_text">
+<a class="viewcode-back" href="../../Modules.html#Modules.fine_tune_whisper.clean_text">[docs]</a>
+<span class="k">def</span> <span class="nf">clean_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clean a given text string by applying standard preprocessing steps.</span>
+
+<span class="sd">    The function performs the following operations:</span>
+
+<span class="sd">    1. Replaces newline characters with a space.</span>
+<span class="sd">    2. Removes special characters, keeping only alphanumeric characters and spaces.</span>
+<span class="sd">    3. Reduces multiple spaces to a single space and trims leading/trailing spaces.</span>
+
+<span class="sd">    :param text: The input text to be cleaned.</span>
+<span class="sd">    :type text: str</span>
+
+<span class="sd">    :return: The cleaned text.</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># text = text.lower()  # Convert to lowercase</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>  <span class="c1"># Replace newlines with space</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^a-zA-Z0-9\s]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>  <span class="c1"># Remove special characters</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="c1"># Remove extra spaces</span>
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+
+<div class="viewcode-block" id="split_and_process_audio">
+<a class="viewcode-back" href="../../Modules.html#Modules.fine_tune_whisper.split_and_process_audio">[docs]</a>
+<span class="k">def</span> <span class="nf">split_and_process_audio</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">max_duration</span><span class="o">=</span><span class="n">MAX_DURATION</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split each audio file in the dataset into smaller chunks of a specified duration,</span>
+<span class="sd">    while maintaining the correspondence with transcripts.</span>
+
+<span class="sd">    :param df: A DataFrame containing audio file paths and transcripts. Expected columns:</span>
+<span class="sd">            &quot;audio&quot; (file path), and &quot;text&quot; (transcript).</span>
+<span class="sd">    :type df: pandas.DataFrame</span>
+
+<span class="sd">    :param max_duration: Maximum duration per audio chunk in seconds. Defaults to 30.</span>
+<span class="sd">    :type max_duration: int, optional</span>
+
+<span class="sd">    :return: A tuple containing:</span>
+<span class="sd">            - new_audio_paths (list of str): File paths of the split audio chunks.</span>
+<span class="sd">            - new_transcripts (list of str): Corresponding transcripts for each chunk.</span>
+<span class="sd">    :rtype: tuple[list[str], list[str]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_audio_paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">new_transcripts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">audio_path</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;audio&quot;</span><span class="p">]</span>
+        <span class="n">transcript</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Load audio file</span>
+        <span class="n">audio</span> <span class="o">=</span> <span class="n">AudioSegment</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">audio_path</span><span class="p">)</span>
+
+        <span class="c1"># Process audio in chunks</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio</span><span class="p">),</span> <span class="n">max_duration</span> <span class="o">*</span> <span class="mi">1000</span>
+        <span class="p">):</span>  <span class="c1"># Convert seconds to ms</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">audio</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">max_duration</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">]</span>
+            <span class="n">chunk_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">audio_path</span><span class="si">}</span><span class="s2">_part</span><span class="si">{</span><span class="n">i</span><span class="o">//</span><span class="mi">1000</span><span class="si">}</span><span class="s2">.mp3&quot;</span>
+            <span class="n">chunk</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">chunk_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mp3&quot;</span><span class="p">)</span>  <span class="c1"># Save the chunk</span>
+
+            <span class="c1"># Assign transcript (currently keeping the same for all chunks)</span>
+            <span class="n">chunk_text</span> <span class="o">=</span> <span class="n">transcript</span>
+
+            <span class="n">new_audio_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk_path</span><span class="p">)</span>
+            <span class="n">new_transcripts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk_text</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_audio_paths</span><span class="p">,</span> <span class="n">new_transcripts</span></div>
+
+
+
+<div class="viewcode-block" id="prepare_dataset">
+<a class="viewcode-back" href="../../Modules.html#Modules.fine_tune_whisper.prepare_dataset">[docs]</a>
+<span class="k">def</span> <span class="nf">prepare_dataset</span><span class="p">(</span><span class="n">examples</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prepares a dataset by extracting audio features and encoding text labels.</span>
+
+<span class="sd">    This function processes each example by:</span>
+<span class="sd">    1. Extracting log-Mel spectrogram features from the input audio array.</span>
+<span class="sd">    2. Encoding the target text into tokenized label IDs with padding and truncation.</span>
+<span class="sd">    3. Removing the original &quot;audio&quot; and &quot;text&quot; fields after processing.</span>
+
+<span class="sd">    :param examples: A dictionary containing:</span>
+<span class="sd">                    - &quot;audio&quot; (dict): An audio sample with an &quot;array&quot; key.</span>
+<span class="sd">                    - &quot;text&quot; (str): Corresponding transcript text.</span>
+<span class="sd">    :type examples: dict</span>
+
+<span class="sd">    :return: The processed example with:</span>
+<span class="sd">            - &quot;input_features&quot; (list): Extracted log-Mel spectrogram features.</span>
+<span class="sd">            - &quot;labels&quot; (list): Tokenized label IDs.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">audio</span> <span class="o">=</span> <span class="n">examples</span><span class="p">[</span><span class="s2">&quot;audio&quot;</span><span class="p">]</span>
+    <span class="n">examples</span><span class="p">[</span><span class="s2">&quot;input_features&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">feature_extractor</span><span class="p">(</span>
+        <span class="n">audio</span><span class="p">[</span><span class="s2">&quot;array&quot;</span><span class="p">],</span> <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">16000</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">input_features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">examples</span><span class="p">[</span><span class="s2">&quot;audio&quot;</span><span class="p">]</span>
+
+    <span class="n">sentences</span> <span class="o">=</span> <span class="n">examples</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+
+    <span class="c1"># encode target text to label ids</span>
+    <span class="n">examples</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span>
+        <span class="n">sentences</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">448</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;max_length&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">input_ids</span>
+    <span class="k">del</span> <span class="n">examples</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">examples</span></div>
+
+
+
+<div class="viewcode-block" id="DataCollatorSpeechSeq2SeqWithPadding">
+<a class="viewcode-back" href="../../Modules.html#Modules.fine_tune_whisper.DataCollatorSpeechSeq2SeqWithPadding">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DataCollatorSpeechSeq2SeqWithPadding</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A data collator for speech-to-text sequence-to-sequence models that</span>
+<span class="sd">    applies appropriate padding to both input features and labels.</span>
+
+<span class="sd">    This collator:</span>
+<span class="sd">    1. Pads input audio features to ensure uniform tensor sizes.</span>
+<span class="sd">    2. Pads tokenized label sequences while replacing padding tokens with -100</span>
+<span class="sd">    to correctly ignore them in loss computation.</span>
+<span class="sd">    3. Removes the beginning-of-sequence (BOS) token if it was previously added.</span>
+
+<span class="sd">    :param processor: A processor that includes a feature extractor for audio</span>
+<span class="sd">                    inputs and a tokenizer for text labels.</span>
+<span class="sd">    :type processor: Any</span>
+
+<span class="sd">    :returns: A dictionary containing:</span>
+<span class="sd">            - **&quot;input_features&quot;** (*torch.Tensor*): Padded log-Mel spectrogram features.</span>
+<span class="sd">            - **&quot;labels&quot;** (*torch.Tensor*): Padded tokenized labels with -100 for ignored positions.</span>
+<span class="sd">    :rtype: Dict[str, torch.Tensor]</span>
+
+<span class="sd">    :methods:</span>
+<span class="sd">        **__call__**(*features: List[Dict[str, Union[List[int], torch.Tensor]]]*) -&gt; *Dict[str, torch.Tensor]*:</span>
+<span class="sd">            Processes a batch of input features and labels, applies necessary padding,</span>
+<span class="sd">            and returns them as PyTorch tensors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">processor</span><span class="p">:</span> <span class="n">Any</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+
+        <span class="c1"># split inputs and labels since they have to be of different lengths and need different padding methods</span>
+
+        <span class="c1"># first treat the audio inputs by simply returning torch tensors</span>
+
+        <span class="n">input_features</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;input_features&quot;</span><span class="p">:</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;input_features&quot;</span><span class="p">]}</span>
+            <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features</span>
+        <span class="p">]</span>
+
+        <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">feature_extractor</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
+            <span class="n">input_features</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># get the tokenized label sequences</span>
+
+        <span class="n">label_features</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="n">feature</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features</span>
+        <span class="p">]</span>
+
+        <span class="c1"># pad the labels to max length</span>
+
+        <span class="n">labels_batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
+            <span class="n">label_features</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># replace padding with -100 to ignore loss correctly</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">labels_batch</span><span class="p">[</span><span class="s2">&quot;input_ids&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">masked_fill</span><span class="p">(</span>
+            <span class="n">labels_batch</span><span class="o">.</span><span class="n">attention_mask</span><span class="o">.</span><span class="n">ne</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="o">-</span><span class="mi">100</span>
+        <span class="p">)</span>
+
+        <span class="c1"># if bos token is appended in previous tokenization step,</span>
+
+        <span class="c1"># cut bos token here as it’s append later anyways</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">labels</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">bos_token_id</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="p">):</span>
+
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
+
+        <span class="k">return</span> <span class="n">batch</span></div>
+
+
+
+<div class="viewcode-block" id="compute_metrics">
+<a class="viewcode-back" href="../../Modules.html#Modules.fine_tune_whisper.compute_metrics">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_metrics</span><span class="p">(</span><span class="n">pred</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the Word Error Rate (WER) for model predictions.</span>
+
+<span class="sd">    This function processes model predictions and reference labels by:</span>
+<span class="sd">    1. Replacing -100 values in labels with the tokenizer&#39;s padding token ID.</span>
+<span class="sd">    2. Decoding the predicted token sequences into text.</span>
+<span class="sd">    3. Decoding the reference token sequences into text.</span>
+<span class="sd">    4. Computing the Word Error Rate (WER) between predictions and references.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pred (transformers.EvalPrediction): A prediction object containing:</span>
+<span class="sd">            - pred.predictions (np.ndarray): The model&#39;s predicted token IDs.</span>
+<span class="sd">            - pred.label_ids (np.ndarray): The reference token IDs (ground truth labels).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A dictionary containing:</span>
+<span class="sd">            - &quot;wer&quot; (float): The computed Word Error Rate (WER) as a percentage.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pred_ids</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">predictions</span>
+
+    <span class="n">label_ids</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">label_ids</span>
+
+    <span class="c1"># replace -100 with the pad_token_id</span>
+
+    <span class="n">label_ids</span><span class="p">[</span><span class="n">label_ids</span> <span class="o">==</span> <span class="o">-</span><span class="mi">100</span><span class="p">]</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">pad_token_id</span>
+
+    <span class="c1"># we do not want to group tokens when computing the metrics</span>
+
+    <span class="n">pred_str</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">batch_decode</span><span class="p">(</span><span class="n">pred_ids</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">label_str</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">batch_decode</span><span class="p">(</span><span class="n">label_ids</span><span class="p">,</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">wer</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">metric</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">predictions</span><span class="o">=</span><span class="n">pred_str</span><span class="p">,</span> <span class="n">references</span><span class="o">=</span><span class="n">label_str</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;wer&quot;</span><span class="p">:</span> <span class="n">wer</span><span class="p">}</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Loading the audio and transcript data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">load_audio_transcripts</span><span class="p">(</span><span class="n">audio_folder</span><span class="p">,</span> <span class="n">transcript_folder</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">clean_text</span><span class="p">)</span>  <span class="c1"># Cleaning the text data</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;text cleaned&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Splitting the audio files</span>
+    <span class="n">new_audio_paths</span><span class="p">,</span> <span class="n">new_transcripts</span> <span class="o">=</span> <span class="n">split_and_process_audio</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="c1"># Creating a new DataFrame with segmented audio files</span>
+    <span class="n">df_split</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;audio&quot;</span><span class="p">:</span> <span class="n">new_audio_paths</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">new_transcripts</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;audio files segmented&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Now splitting into train/test datasets</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">train_df</span><span class="p">,</span> <span class="n">test_df</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">df_split</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">train_df</span><span class="p">)</span>
+    <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">test_df</span><span class="p">)</span>
+
+    <span class="c1"># Casting the audio column to Audio type (with sampling rate 16kHz)</span>
+    <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">cast_column</span><span class="p">(</span>
+        <span class="s2">&quot;audio&quot;</span><span class="p">,</span> <span class="n">Audio</span><span class="p">(</span><span class="n">sampling_rate</span><span class="o">=</span><span class="mi">16000</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">test_dataset</span><span class="o">.</span><span class="n">cast_column</span><span class="p">(</span>
+        <span class="s2">&quot;audio&quot;</span><span class="p">,</span> <span class="n">Audio</span><span class="p">(</span><span class="n">sampling_rate</span><span class="o">=</span><span class="mi">16000</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Train-Test Split Completed&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Loading the feature extractor, tokenizer, and processor models</span>
+    <span class="n">feature_extractor</span> <span class="o">=</span> <span class="n">WhisperFeatureExtractor</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="s2">&quot;openai/whisper-base&quot;</span>
+    <span class="p">)</span>
+    <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">WhisperTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="s2">&quot;openai/whisper-small&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;English&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;transcribe&quot;</span>
+    <span class="p">)</span>
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">WhisperProcessor</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="s2">&quot;openai/whisper-small&quot;</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;English&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;transcribe&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Preprocessing the training and testing datasets</span>
+    <span class="n">train_dataset2</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">prepare_dataset</span><span class="p">,</span> <span class="n">num_proc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">test_dataset2</span> <span class="o">=</span> <span class="n">test_dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">prepare_dataset</span><span class="p">,</span> <span class="n">num_proc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;split-2&quot;</span><span class="p">)</span>
+
+    <span class="n">data_collator</span> <span class="o">=</span> <span class="n">DataCollatorSpeechSeq2SeqWithPadding</span><span class="p">(</span><span class="n">processor</span><span class="o">=</span><span class="n">processor</span><span class="p">)</span>
+
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">evaluate</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;wer&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Training the model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">WhisperForConditionalGeneration</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+        <span class="s2">&quot;openai/whisper-base&quot;</span>
+    <span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">forced_decoder_ids</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">suppress_tokens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;model loaded&quot;</span><span class="p">)</span>
+
+    <span class="n">training_args</span> <span class="o">=</span> <span class="n">Seq2SeqTrainingArguments</span><span class="p">(</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;./whisper-small-eng&quot;</span><span class="p">,</span>  <span class="c1"># output directory</span>
+        <span class="n">per_device_train_batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># batch size per device during training</span>
+        <span class="n">gradient_accumulation_steps</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>  <span class="c1"># total number of steps before back propagation</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span>  <span class="c1"># learning rate</span>
+        <span class="n">warmup_steps</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>  <span class="c1"># number of warmup steps for learning rate scheduler</span>
+        <span class="n">max_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>  <span class="c1"># total number of training steps</span>
+        <span class="n">gradient_checkpointing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># enable gradient checkpointing to save memory</span>
+        <span class="n">fp16</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># enable mixed precision training</span>
+        <span class="n">eval_strategy</span><span class="o">=</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span>  <span class="c1"># evaluation strategy to use</span>
+        <span class="n">save_strategy</span><span class="o">=</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span>  <span class="c1"># save strategy to use</span>
+        <span class="n">per_device_eval_batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>  <span class="c1"># batch size for evaluation</span>
+        <span class="n">predict_with_generate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># enable generation during evaluation</span>
+        <span class="n">generation_max_length</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>  <span class="c1"># maximum length of generated text</span>
+        <span class="n">save_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>  <span class="c1"># save model every 1000 steps</span>
+        <span class="n">eval_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>  <span class="c1"># evaluate model every 1000 steps</span>
+        <span class="n">logging_steps</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>  <span class="c1"># log metrics every 25 steps</span>
+        <span class="n">report_to</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tensorboard&quot;</span><span class="p">],</span>  <span class="c1"># enable tensorboard logging</span>
+        <span class="n">load_best_model_at_end</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># load best model at the end of training</span>
+        <span class="n">metric_for_best_model</span><span class="o">=</span><span class="s2">&quot;wer&quot;</span><span class="p">,</span>  <span class="c1"># metric to use for best model</span>
+        <span class="n">greater_is_better</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># whether the best model is the one with the highest or lowest value of the metric</span>
+        <span class="n">push_to_hub</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># push the final model to the hub</span>
+        <span class="c1"># num_train_epochs=3</span>
+    <span class="p">)</span>
+
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">Seq2SeqTrainer</span><span class="p">(</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">training_args</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset2</span><span class="p">,</span>
+        <span class="n">eval_dataset</span><span class="o">=</span><span class="n">test_dataset2</span><span class="p">,</span>
+        <span class="n">data_collator</span><span class="o">=</span><span class="n">data_collator</span><span class="p">,</span>
+        <span class="n">compute_metrics</span><span class="o">=</span><span class="n">compute_metrics</span><span class="p">,</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="n">processor</span><span class="o">.</span><span class="n">feature_extractor</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Training the model......&quot;</span><span class="p">)</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model Saved&quot;</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="s2">&quot;./whisper-small-eng&quot;</span><span class="p">)</span>
+    <span class="n">processor</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="s2">&quot;./whisper-small-eng&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Kenil Patwa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

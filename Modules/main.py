@@ -30,7 +30,7 @@ Modules:
 - `split_audio`, `transcribe`, `translate_audio`: Audio processing functions including transcription and translation.
 - `split_text`, `image_generate_embeddings`, `generate_table_embeddings`: Helper functions to split content and generate embeddings.
 - `store_text`, `store_image_embeddings`, `store_table_embeddings`: Functions for storing embeddings in Qdrant.
-- `prompt`, `pdf_summarization`, `audio_summarization`, `retrieve_text`, `image_retrieval`, `table_retrieve`, `reranking`, `generate_response`: Functions for querying and processing the extracted content.
+- `pdf_prompt`, `audio_prompt`, `pdf_summarization`, `audio_summarization`, `retrieve_text`, `image_retrieval`, `table_retrieve`, `reranking`, `generate_response`: Functions for querying and processing the extracted content.
 - `resize_pdf`, `translate_pdf`: Functions for resizing and translating PDF files.
 
 Usage:
@@ -53,6 +53,7 @@ if "torch.classes" in sys.modules:
     if isinstance(sys.modules["torch.classes"], types.ModuleType):
         del sys.modules["torch.classes"]
 
+import shutil
 from io import BytesIO
 
 import librosa
@@ -79,11 +80,12 @@ from embeddings import (
     split_text,
 )
 from retrieve import (
+    audio_prompt,
     audio_summarization,
     generate_response,
     image_retrieval,
+    pdf_prompt,
     pdf_summarization,
-    prompt,
     reranking,
     retrieve_text,
     table_retrieve,
@@ -153,7 +155,9 @@ if "translation_mode" not in st.session_state:
 
 # Upload file (now at top center)
 uploaded_file = st.file_uploader(
-    "📁 Upload a PDF or MP3 file to begin", type=["pdf", "mp3"]
+    "📁 Upload a PDF or MP3 file to begin",
+    type=["pdf", "mp3"],
+    key="upload_widget",
 )
 if uploaded_file:
     st.session_state.file = uploaded_file
@@ -256,31 +260,34 @@ if st.session_state.file:
 
     with col2:
         if st.button("📝 Summarize"):
-            partial_summary = []
-            if file_type == "application/pdf":
-                pdf_summary_prompt = pdf_summarization()
-                partial_summary.append(
-                    generate_response(
-                        st.session_state.qwen_processor,
-                        st.session_state.qwen_model,
-                        st.session_state.device,
-                        pdf_summary_prompt,
-                        "Summarize the Information",
-                        st.session_state.content["text"],
+            with st.spinner("Summarizing......"):
+                partial_summary = []
+                if file_type == "application/pdf":
+                    pdf_summary_prompt = pdf_summarization()
+                    images = st.session_state.content.get("images", [])
+                    partial_summary.append(
+                        generate_response(
+                            st.session_state.qwen_processor,
+                            st.session_state.qwen_model,
+                            st.session_state.device,
+                            pdf_summary_prompt,
+                            "Summarize the Information",
+                            st.session_state.content["text"],
+                            images,
+                        )
                     )
-                )
-            if file_type == "audio/mpeg":
-                audio_summary_prompt = audio_summarization()
-                partial_summary.append(
-                    generate_response(
-                        st.session_state.qwen_processor,
-                        st.session_state.qwen_model,
-                        st.session_state.device,
-                        audio_summary_prompt,
-                        "Summarize the Information",
-                        st.session_state.transcriptions,
+                if file_type == "audio/mpeg":
+                    audio_summary_prompt = audio_summarization()
+                    partial_summary.append(
+                        generate_response(
+                            st.session_state.qwen_processor,
+                            st.session_state.qwen_model,
+                            st.session_state.device,
+                            audio_summary_prompt,
+                            "Summarize the Information",
+                            st.session_state.transcriptions,
+                        )
                     )
-                )
             final_summary = "\n".join(f"- {s}" for s in partial_summary)
             st.session_state.chat_history.append(
                 ("You", "Summarize the document")
@@ -289,10 +296,11 @@ if st.session_state.file:
 
     with col3:
         if st.button("🔄 Restart"):
-            st.session_state.chat_history = []
-            st.session_state.file = None
-            st.session_state.translation_mode = False
-            st.rerun()
+            with st.spinner("🔄 Restarting..."):
+                shutil.rmtree("extracted_images", ignore_errors=True)
+                st.session_state.clear()
+                st.session_state.pop("upload_widget", None)
+                st.rerun()
 
     # Language dropdown if Translate was clicked
     if st.session_state.translation_mode:
@@ -337,11 +345,11 @@ if st.session_state.file:
     # Chat input and history
     user_input = st.text_input("💭 You:", key="user_input")
     if user_input:
-        if "promt_template" not in st.session_state:
-            st.session_state.prompt_template = prompt()
         output_text = ""
         with st.spinner("Generating Response..."):
             if file_type == "application/pdf":
+                if "pdf_promt_template" not in st.session_state:
+                    st.session_state.prompt_template = pdf_prompt()
                 try:
                     table_retriever = table_retrieve(
                         st.session_state.qdrant_client,
@@ -368,8 +376,6 @@ if st.session_state.file:
                 output_text = reranking(
                     user_input, relevant_text, table_retriever or None
                 )
-
-                # Use generate_response with optional image input
                 response = generate_response(
                     st.session_state.qwen_processor,
                     st.session_state.qwen_model,
@@ -380,16 +386,20 @@ if st.session_state.file:
                     image_path=image_results if image_results else None,
                 )
             elif file_type == "audio/mpeg":
-                relevant_text = retrieve_text(
+                if "audio_promt_template" not in st.session_state:
+                    st.session_state.prompt_template = audio_prompt()
+                text_retriever = retrieve_text(
                     st.session_state.text_vector_store
                 )
+                docs = text_retriever.invoke(user_input)
+                context = " ".join([d.page_content for d in docs])
                 response = generate_response(
                     st.session_state.qwen_processor,
                     st.session_state.qwen_model,
                     st.session_state.device,
                     st.session_state.prompt_template,
                     user_input,
-                    relevant_text,
+                    context,
                 )
         bot_response = f"{response}"
         st.session_state.chat_history.append(("You", user_input))

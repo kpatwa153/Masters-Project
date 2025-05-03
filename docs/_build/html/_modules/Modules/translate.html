@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules.translate &mdash; Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Modules.html">Modules package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Modules.translate</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Modules.translate</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PDF Translation and Resizing Utilities</span>
+
+<span class="sd">This module provides tools to preprocess and translate the text content of PDF documents</span>
+<span class="sd">while preserving their visual structure, layout, and style. It is especially useful for</span>
+<span class="sd">creating translated versions of documents without altering formatting or visuals.</span>
+
+<span class="sd">Key Functionalities:</span>
+<span class="sd">--------------------</span>
+
+<span class="sd">1. **PDF Resizing**</span>
+<span class="sd">   - `resize_pdf(input_pdf, output_pdf, scale_factor=1.2)`:</span>
+<span class="sd">     Scales all pages of a PDF by a given factor. This is useful for enlarging the page</span>
+<span class="sd">     space to make room for translated text that may take up more space than the original.</span>
+
+<span class="sd">2. **PDF Translation**</span>
+<span class="sd">   - `translate_pdf(input_pdf, output_pdf, language, translator)`:</span>
+<span class="sd">     Translates the textual content of a resized PDF using a translator (e.g., Deep Translator).</span>
+<span class="sd">     It preserves the layout by:</span>
+<span class="sd">       - overlaying white rectangles on the original text</span>
+<span class="sd">       - inserting translated text as styled HTML blocks</span>
+<span class="sd">       - using Optional Content Groups (OCGs) to separate visual layers</span>
+
+<span class="sd">   This function supports translation into any language supported by the given translator</span>
+<span class="sd">   and ensures clean rendering in the output PDF.</span>
+
+<span class="sd">Key Dependencies:</span>
+<span class="sd">-----------------</span>
+<span class="sd">- `pymupdf` (for PDF manipulation)</span>
+<span class="sd">- `deep_translator.GoogleTranslator` (for translation support)</span>
+<span class="sd">- `os` (for file operations)</span>
+
+<span class="sd">Text Extraction Settings:</span>
+<span class="sd">-------------------------</span>
+<span class="sd">- Text is dehyphenated and whitespace preserved for improved block-based processing.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">pymupdf</span>
+<span class="kn">from</span> <span class="nn">deep_translator</span> <span class="kn">import</span> <span class="n">GoogleTranslator</span>
+
+<span class="c1"># Define color &quot;white&quot;</span>
+<span class="n">WHITE</span> <span class="o">=</span> <span class="n">pymupdf</span><span class="o">.</span><span class="n">pdfcolor</span><span class="p">[</span><span class="s2">&quot;white&quot;</span><span class="p">]</span>
+<span class="c1"># This flag ensures that text will be dehyphenated after extraction.</span>
+<span class="n">textflags</span> <span class="o">=</span> <span class="n">pymupdf</span><span class="o">.</span><span class="n">TEXT_DEHYPHENATE</span> <span class="o">|</span> <span class="n">pymupdf</span><span class="o">.</span><span class="n">TEXT_PRESERVE_WHITESPACE</span>
+
+
+<div class="viewcode-block" id="resize_pdf">
+<a class="viewcode-back" href="../../Modules.html#Modules.translate.resize_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">resize_pdf</span><span class="p">(</span><span class="n">input_pdf</span><span class="p">,</span> <span class="n">output_pdf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scale_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resizes a given PDF by scaling its page dimensions by a specified factor.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
+<span class="sd">    input_pdf : Document</span>
+<span class="sd">        the PDF file to be translated.</span>
+<span class="sd">        This should be a `pymupdf` Document object.</span>
+<span class="sd">    output_pdf : str</span>
+<span class="sd">        Path to save the resized PDF.</span>
+<span class="sd">    scale_factor : float, optional</span>
+<span class="sd">        Factor by which to scale the page size. Default is 1.2.</span>
+
+<span class="sd">    Behavior:</span>
+<span class="sd">    ---------</span>
+<span class="sd">    - Opens the input PDF and creates a new blank PDF document.</span>
+<span class="sd">    - Iterates through each page, resizes it by the given scale factor, and copies the content.</span>
+<span class="sd">    - Saves the resized PDF to the specified output path.</span>
+<span class="sd">    - Deletes the PDF (`input_pdf`) after resizing.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    --------</span>
+<span class="sd">    str</span>
+<span class="sd">        Path to the resized PDF.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">old_doc</span> <span class="o">=</span> <span class="n">input_pdf</span>
+    <span class="n">new_doc</span> <span class="o">=</span> <span class="n">pymupdf</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">old_doc</span><span class="p">:</span>
+        <span class="n">original_rect</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">rect</span>
+        <span class="n">new_width</span> <span class="o">=</span> <span class="n">original_rect</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">scale_factor</span>
+        <span class="n">new_height</span> <span class="o">=</span> <span class="n">original_rect</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">scale_factor</span>
+
+        <span class="c1"># Create a new blank page with increased size</span>
+        <span class="n">new_page</span> <span class="o">=</span> <span class="n">new_doc</span><span class="o">.</span><span class="n">new_page</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">new_width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">new_height</span><span class="p">)</span>
+        <span class="c1"># Copy content from the old page and scale it</span>
+        <span class="n">new_page</span><span class="o">.</span><span class="n">show_pdf_page</span><span class="p">(</span>
+            <span class="n">new_page</span><span class="o">.</span><span class="n">rect</span><span class="p">,</span> <span class="n">old_doc</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">clip</span><span class="o">=</span><span class="n">original_rect</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Save the resized document</span>
+    <span class="n">new_doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_pdf</span><span class="p">)</span>
+    <span class="n">new_doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">old_doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># os.remove(input_pdf)  # Remove the original PDF</span>
+    <span class="k">return</span> <span class="n">output_pdf</span></div>
+
+
+
+<div class="viewcode-block" id="translate_pdf">
+<a class="viewcode-back" href="../../Modules.html#Modules.translate.translate_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">translate_pdf</span><span class="p">(</span><span class="n">input_pdf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_pdf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">language</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">translator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translates the text content of a PDF from English to a specified language while preserving layout and structure.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_pdf : str</span>
+<span class="sd">        Path to the input PDF (expected to be preprocessed/resized).</span>
+<span class="sd">    output_pdf : str</span>
+<span class="sd">        Path where the translated PDF will be saved.</span>
+<span class="sd">    language : str</span>
+<span class="sd">        Target language for translation (used for naming the optional content group).</span>
+<span class="sd">    translator : Callable</span>
+<span class="sd">        A translation function or model with a `.translate(text)` method.</span>
+
+<span class="sd">    Process</span>
+<span class="sd">    -------</span>
+<span class="sd">    - Opens the input PDF and creates a new blank document.</span>
+<span class="sd">    - For each page:</span>
+<span class="sd">        - Duplicates the layout and visuals of the original page.</span>
+<span class="sd">        - Extracts text blocks from the original.</span>
+<span class="sd">        - Translates each block from English to the target language.</span>
+<span class="sd">        - Draws a white rectangle over the original text area.</span>
+<span class="sd">        - Inserts the translated text using HTML formatting (to preserve style).</span>
+<span class="sd">    - Adds translated text as an optional content group (OCG).</span>
+<span class="sd">    - Deletes the original input PDF after saving the translated one.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Path to the newly saved translated PDF.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">resized_doc</span> <span class="o">=</span> <span class="n">pymupdf</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">input_pdf</span><span class="p">)</span>
+    <span class="n">translated_doc</span> <span class="o">=</span> <span class="n">pymupdf</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">resized_doc</span><span class="p">:</span>
+        <span class="n">new_page</span> <span class="o">=</span> <span class="n">translated_doc</span><span class="o">.</span><span class="n">new_page</span><span class="p">(</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">page</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">height</span>
+        <span class="p">)</span>
+        <span class="n">new_page</span><span class="o">.</span><span class="n">show_pdf_page</span><span class="p">(</span>
+            <span class="n">new_page</span><span class="o">.</span><span class="n">rect</span><span class="p">,</span> <span class="n">resized_doc</span><span class="p">,</span> <span class="n">page</span><span class="o">.</span><span class="n">number</span>
+        <span class="p">)</span>  <span class="c1"># Copy content from original page</span>
+
+        <span class="c1"># Define an Optional Content layer in the new document</span>
+        <span class="n">ocg_xref</span> <span class="o">=</span> <span class="n">translated_doc</span><span class="o">.</span><span class="n">add_ocg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">language</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Extract text grouped in blocks</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="s2">&quot;blocks&quot;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">textflags</span><span class="p">)</span>
+
+        <span class="c1"># Process each text block</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">:</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="n">block</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># Bounding box</span>
+            <span class="n">english</span> <span class="o">=</span> <span class="n">block</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># Extracted English text</span>
+            <span class="n">english</span> <span class="o">=</span> <span class="n">english</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\uf0b7</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;•&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Translate text</span>
+            <span class="n">french</span> <span class="o">=</span> <span class="n">translator</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">english</span><span class="p">)</span>
+
+            <span class="c1"># Create styled translated text</span>
+            <span class="n">french_html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            &lt;div style=&#39;font-size:16px; text-align:justify; line-height:1.5;&#39;&gt;</span>
+<span class="s2">                </span><span class="si">{</span><span class="n">french</span><span class="si">}</span>
+<span class="s2">            &lt;/div&gt;</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+
+            <span class="c1"># Cover original text and insert translated text</span>
+            <span class="n">new_page</span><span class="o">.</span><span class="n">draw_rect</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">WHITE</span><span class="p">,</span> <span class="n">oc</span><span class="o">=</span><span class="n">ocg_xref</span><span class="p">)</span>
+            <span class="n">new_page</span><span class="o">.</span><span class="n">insert_htmlbox</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">french_html</span><span class="p">,</span> <span class="n">oc</span><span class="o">=</span><span class="n">ocg_xref</span><span class="p">)</span>
+
+    <span class="c1"># Save the translated document</span>
+    <span class="n">translated_doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_pdf</span><span class="p">)</span>
+    <span class="n">translated_doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">resized_doc</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">input_pdf</span><span class="p">)</span>  <span class="c1"># Remove the resized PDF</span>
+    <span class="k">return</span> <span class="n">output_pdf</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Kenil Patwa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

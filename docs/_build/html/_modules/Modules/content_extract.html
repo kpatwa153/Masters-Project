@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules.content_extract &mdash; Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Modules.html">Modules package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Modules.content_extract</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Modules.content_extract</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">PDF Content Extraction Utilities</span>
+
+<span class="sd">This module provides utility functions for extracting different types of content from PDF documents,</span>
+<span class="sd">including:</span>
+
+<span class="sd">- **Text**: Full text from each page using PyMuPDF.</span>
+<span class="sd">- **Images**: Embedded images from all pages, resized to 512x512 and saved as PNGs using PIL.</span>
+<span class="sd">- **Tables**: Structured tables using Camelot&#39;s lattice mode, returned as JSON-style dictionaries.</span>
+
+<span class="sd">Core Functions:</span>
+<span class="sd">---------------</span>
+<span class="sd">1. extract_text_from_pdf(doc):</span>
+<span class="sd">    Extracts all text from a PyMuPDF Document object.</span>
+
+<span class="sd">2. extract_images_from_pdf(doc, output_folder=&quot;extracted_images&quot;):</span>
+<span class="sd">    Extracts and resizes all embedded images from the PDF and saves them to the specified folder.</span>
+
+<span class="sd">3. extract_table_content(pdf_stream):</span>
+<span class="sd">    Uses Camelot to parse tables from a PDF byte stream and returns a list of structured tables.</span>
+
+<span class="sd">4. pdf_content_extraction(doc, pdf_stream):</span>
+<span class="sd">    A wrapper that extracts text, images, and tables from a PDF document and returns them in a structured dictionary.</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">-------------</span>
+<span class="sd">- PyMuPDF (fitz) – for reading PDF text and images</span>
+<span class="sd">- PIL (Pillow) – for image processing</span>
+<span class="sd">- Camelot – for PDF table extraction</span>
+<span class="sd">- tempfile, io, os – for handling temporary file storage and streams</span>
+
+<span class="sd">Typical Use Case:</span>
+<span class="sd">-----------------</span>
+<span class="sd">This module is ideal for end-to-end content extraction in document analysis workflows where text,</span>
+<span class="sd">visual content, and tabular data are all needed from PDF files.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">import</span> <span class="nn">camelot.io</span> <span class="k">as</span> <span class="nn">camelot</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+
+<div class="viewcode-block" id="extract_text_from_pdf">
+<a class="viewcode-back" href="../../Modules.html#Modules.content_extract.extract_text_from_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_text_from_pdf</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts text from a PDF file.</span>
+
+<span class="sd">    This function reads a PDF document and extracts text from each page,</span>
+<span class="sd">    concatenating the text into a single string with newline separators.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        doc (Document): The input PDF document.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Extracted text from the entire PDF document.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># doc = pymupdf.open(pdf_path)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>  <span class="c1"># Extract text from each page</span>
+
+    <span class="k">return</span> <span class="n">text</span></div>
+
+
+
+<div class="viewcode-block" id="extract_images_from_pdf">
+<a class="viewcode-back" href="../../Modules.html#Modules.content_extract.extract_images_from_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_images_from_pdf</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">output_folder</span><span class="o">=</span><span class="s2">&quot;extracted_images&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts images from a PDF file and saves them as PNG files.</span>
+
+<span class="sd">    This function scans each page of the PDF for embedded images, extracts them,</span>
+<span class="sd">    resizes them to 512x512 pixels, and saves them as PNG files in the specified</span>
+<span class="sd">    output folder.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        doc (Document): The input PDF document.</span>
+<span class="sd">        output_folder (str, optional): Directory where extracted images will be</span>
+<span class="sd">                                       saved. Defaults to &quot;extracted_images&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A list of file paths for the extracted images.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span>
+        <span class="n">output_folder</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>  <span class="c1"># Create output folder if it doesn&#39;t exist</span>
+    <span class="c1"># doc = pymupdf.open(pdf_path)</span>
+    <span class="n">image_paths</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">page_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">img_index</span><span class="p">,</span> <span class="n">img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">page_num</span><span class="p">]</span><span class="o">.</span><span class="n">get_images</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+            <span class="n">xref</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Get image reference</span>
+            <span class="n">base_image</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">extract_image</span><span class="p">(</span><span class="n">xref</span><span class="p">)</span>
+            <span class="n">image_bytes</span> <span class="o">=</span> <span class="n">base_image</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span>
+
+            <span class="c1"># Open the extracted image in PIL and resize</span>
+            <span class="n">img_pil</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">image_bytes</span><span class="p">))</span>
+            <span class="n">img_pil</span> <span class="o">=</span> <span class="n">img_pil</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">LANCZOS</span><span class="p">)</span>
+
+            <span class="c1"># Save the resized image</span>
+            <span class="n">image_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">output_folder</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;page_</span><span class="si">{</span><span class="n">page_num</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">_image_</span><span class="si">{</span><span class="n">img_index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">.png&quot;</span>
+            <span class="p">)</span>
+            <span class="n">img_pil</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">image_filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;PNG&quot;</span><span class="p">)</span>
+
+            <span class="n">image_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image_filename</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">image_paths</span></div>
+
+
+
+<div class="viewcode-block" id="extract_table_content">
+<a class="viewcode-back" href="../../Modules.html#Modules.content_extract.extract_table_content">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_table_content</span><span class="p">(</span><span class="n">pdf_stream</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts tables from a PDF file using Camelot and formats them as JSON.</span>
+
+<span class="sd">    This function reads a PDF document and extracts tables from each page using</span>
+<span class="sd">    Camelot&#39;s lattice-based extraction. It then processes the tables into a list</span>
+<span class="sd">    of dictionaries, where each dictionary represents a table with its extracted data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pdf_stream (BytesIO): A stream of the PDF file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: A dictionary containing extracted tables and their data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Save the PDF to a temporary file</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.pdf&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_file</span><span class="p">:</span>
+        <span class="n">tmp_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pdf_stream</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">pdf_path</span> <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">tables</span> <span class="o">=</span> <span class="n">camelot</span><span class="o">.</span><span class="n">read_pdf</span><span class="p">(</span><span class="n">pdf_path</span><span class="p">,</span> <span class="n">pages</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">flavor</span><span class="o">=</span><span class="s2">&quot;lattice&quot;</span><span class="p">)</span>
+    <span class="n">all_tables_data</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List to store processed tables</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tables</span><span class="p">):</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># Extract headers</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>  <span class="c1"># Extract table data</span>
+        <span class="n">table_data</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="n">row</span><span class="p">))</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span>
+        <span class="p">]</span>  <span class="c1"># Convert to list of dicts</span>
+        <span class="n">all_tables_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;table_id&quot;</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">table_data</span><span class="p">}</span>
+        <span class="p">)</span>  <span class="c1"># Store with table ID</span>
+
+    <span class="k">return</span> <span class="n">all_tables_data</span></div>
+
+
+
+<div class="viewcode-block" id="pdf_content_extraction">
+<a class="viewcode-back" href="../../Modules.html#Modules.content_extract.pdf_content_extraction">[docs]</a>
+<span class="k">def</span> <span class="nf">pdf_content_extraction</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">pdf_stream</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts text, images, and tables from a PDF file.</span>
+
+<span class="sd">    This function combines the extraction of textual content, embedded images,</span>
+<span class="sd">    and tabular data from a given PDF document. It internally uses specialized</span>
+<span class="sd">    helper functions to process and collect each content type, and returns them</span>
+<span class="sd">    as a structured dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        doc (Document): The input PDF document.</span>
+<span class="sd">        pdf_stream (BytesIO): A stream of the PDF file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A dictionary with the following keys:</span>
+<span class="sd">            - &quot;text&quot; (str): Extracted textual content.</span>
+<span class="sd">            - &quot;images&quot; (list): List of file paths to the extracted and resized images.</span>
+<span class="sd">            - &quot;tables&quot; (list): List of extracted tables, each represented as a dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">content</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extract_text_from_pdf</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="n">content</span><span class="p">[</span><span class="s2">&quot;images&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extract_images_from_pdf</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="n">content</span><span class="p">[</span><span class="s2">&quot;tables&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extract_table_content</span><span class="p">(</span><span class="n">pdf_stream</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">content</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Kenil Patwa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

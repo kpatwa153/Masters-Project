@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules.store_embeddings &mdash; Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&amp;A System 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Modules.html">Modules package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Medical Chatbot: AI‑Powered Transcription, Summarization, and Q&A System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Modules.store_embeddings</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Modules.store_embeddings</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Qdrant-Based Embedding Storage Utilities</span>
+
+<span class="sd">This module provides functions for storing text, image, and table embeddings into</span>
+<span class="sd">Qdrant collections. It supports both memory-based and persistent Qdrant usage,</span>
+<span class="sd">and includes metadata storage for downstream search, retrieval, or visualization tasks.</span>
+
+<span class="sd">Key Functionalities:</span>
+<span class="sd">--------------------</span>
+
+<span class="sd">1. **Collection Management**</span>
+<span class="sd">   - `create_collection(client, collection_name, vector_size)`:</span>
+<span class="sd">     Creates or resets a Qdrant collection with the specified vector size using cosine distance.</span>
+
+<span class="sd">2. **Text Embedding Storage**</span>
+<span class="sd">   - `store_text(text, embedding_model, collection_name)`:</span>
+<span class="sd">     Stores embedded text documents into a Qdrant collection using LangChain&#39;s Qdrant wrapper.</span>
+
+<span class="sd">3. **Image Embedding Storage**</span>
+<span class="sd">   - `store_image_embeddings(...)`:</span>
+<span class="sd">     Stores image embeddings in Qdrant along with metadata such as image size, file path, and raw pixel data.</span>
+
+<span class="sd">4. **Table Embedding Storage**</span>
+<span class="sd">   - `store_table_embeddings(...)`:</span>
+<span class="sd">     Saves tabular data embeddings in Qdrant, storing both the embedding vectors and original formatted text as metadata.</span>
+
+<span class="sd">Use Cases:</span>
+<span class="sd">----------</span>
+<span class="sd">- Multimodal semantic search (text, image, table)</span>
+<span class="sd">- Retrieval-augmented generation (RAG)</span>
+<span class="sd">- Embedding-based data exploration and visualization</span>
+<span class="sd">- Metadata-rich vector storage for custom AI pipelines</span>
+
+<span class="sd">Dependencies:</span>
+<span class="sd">-------------</span>
+<span class="sd">- Qdrant (via `qdrant-client` and `langchain.vectorstores.Qdrant`)</span>
+<span class="sd">- LangChain (for text embedding integration)</span>
+<span class="sd">- Python standard libraries (e.g., `list`, `tuple`, `print`)</span>
+
+<span class="sd">Example Output:</span>
+<span class="sd">---------------</span>
+<span class="sd">- Console log of created collections</span>
+<span class="sd">- Stored vectors with IDs and rich metadata</span>
+<span class="sd">- Callable Qdrant vector store (for text)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="c1"># LangChain and Vector Store Libraries</span>
+<span class="kn">from</span> <span class="nn">langchain_community.vectorstores</span> <span class="kn">import</span> <span class="n">Qdrant</span>
+
+<span class="c1"># Qdrant Client and Models</span>
+<span class="kn">from</span> <span class="nn">qdrant_client.models</span> <span class="kn">import</span> <span class="n">Distance</span><span class="p">,</span> <span class="n">PointStruct</span><span class="p">,</span> <span class="n">VectorParams</span>
+
+
+<div class="viewcode-block" id="create_collection">
+<a class="viewcode-back" href="../../Modules.html#Modules.store_embeddings.create_collection">[docs]</a>
+<span class="k">def</span> <span class="nf">create_collection</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">,</span> <span class="n">vector_size</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a Qdrant collection for storing embeddings.</span>
+
+<span class="sd">    This function checks if a collection with the specified name already exists</span>
+<span class="sd">    in Qdrant. If it does, the existing collection is deleted before creating</span>
+<span class="sd">    a new one with the specified vector size and cosine similarity as the</span>
+<span class="sd">    distance metric.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client (QdrantClient): The Qdrant client instance.</span>
+<span class="sd">        collection_name (str): The name of the collection to create.</span>
+<span class="sd">        vector_size (int): The dimensionality of the embedding vectors.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if the collection exists and delete it if necessary</span>
+    <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">collection_exists</span><span class="p">(</span><span class="n">collection_name</span><span class="p">):</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">delete_collection</span><span class="p">(</span><span class="n">collection_name</span><span class="p">)</span>
+
+    <span class="c1"># Create the new collection with cosine similarity for image embeddings</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">create_collection</span><span class="p">(</span>
+        <span class="n">collection_name</span><span class="o">=</span><span class="n">collection_name</span><span class="p">,</span>
+        <span class="n">vectors_config</span><span class="o">=</span><span class="n">VectorParams</span><span class="p">(</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">vector_size</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="n">Distance</span><span class="o">.</span><span class="n">COSINE</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Collection &#39;</span><span class="si">{</span><span class="n">collection_name</span><span class="si">}</span><span class="s2">&#39; created successfully!&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="store_text">
+<a class="viewcode-back" href="../../Modules.html#Modules.store_embeddings.store_text">[docs]</a>
+<span class="k">def</span> <span class="nf">store_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">embedding_model</span><span class="p">,</span> <span class="n">collection_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores text embeddings into a Qdrant collection.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        texts (list): A list of text documents to embed and store.</span>
+<span class="sd">        embedding_model: A model or callable that returns embeddings for the texts.</span>
+<span class="sd">        collection_name (str): Name of the Qdrant collection to store embeddings.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Qdrant: A Qdrant vector store instance with the stored embeddings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Qdrant</span><span class="o">.</span><span class="n">from_texts</span><span class="p">(</span>
+        <span class="n">texts</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+        <span class="n">embedding</span><span class="o">=</span><span class="n">embedding_model</span><span class="p">,</span>
+        <span class="n">collection_name</span><span class="o">=</span><span class="n">collection_name</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="s2">&quot;:memory:&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="store_image_embeddings">
+<a class="viewcode-back" href="../../Modules.html#Modules.store_embeddings.store_image_embeddings">[docs]</a>
+<span class="k">def</span> <span class="nf">store_image_embeddings</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">,</span>
+    <span class="n">image_paths</span><span class="p">,</span>
+    <span class="n">image_embeddings</span><span class="p">,</span>
+    <span class="n">px</span><span class="p">,</span>
+    <span class="n">size</span><span class="p">,</span>
+    <span class="n">image_collection</span><span class="p">,</span>
+    <span class="n">image_vector_size</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores image embeddings and metadata in a Qdrant collection.</span>
+
+<span class="sd">    This function creates a Qdrant collection (or overwrites it if it exists),</span>
+<span class="sd">    then stores the provided image embeddings along with associated metadata</span>
+<span class="sd">    such as filenames, image sizes, and pixel data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client (QdrantClient): The Qdrant client instance.</span>
+<span class="sd">        image_paths (list of str): List of file paths to the images.</span>
+<span class="sd">        image_embeddings (list): List of embedding vectors for the images.</span>
+<span class="sd">        px (list): Pixel data for each image (optional for search, useful for metadata).</span>
+<span class="sd">        size (tuple): Size (width, height) of the images.</span>
+<span class="sd">        image_collection (str): Name of the Qdrant collection to create.</span>
+<span class="sd">        image_vector_size (int): Dimensionality of the image embedding vectors.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">create_collection</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">image_collection</span><span class="p">,</span> <span class="n">image_vector_size</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">PointStruct</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span>  <span class="c1"># Unique ID for each image</span>
+            <span class="n">vector</span><span class="o">=</span><span class="n">image_embeddings</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>  <span class="c1"># Embedding vector</span>
+            <span class="n">payload</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">image_paths</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>  <span class="c1"># Store filename for reference</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">size</span><span class="p">,</span>  <span class="c1"># Store image size</span>
+                <span class="s2">&quot;pixels&quot;</span><span class="p">:</span> <span class="n">px</span><span class="p">,</span>  <span class="c1"># Store pixel data</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image_paths</span><span class="p">))</span>
+    <span class="p">]</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">upsert</span><span class="p">(</span><span class="n">collection_name</span><span class="o">=</span><span class="n">image_collection</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stored </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span><span class="si">}</span><span class="s2"> images in Qdrant.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="store_table_embeddings">
+<a class="viewcode-back" href="../../Modules.html#Modules.store_embeddings.store_table_embeddings">[docs]</a>
+<span class="k">def</span> <span class="nf">store_table_embeddings</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">,</span> <span class="n">TABLE_COLLECTION</span><span class="p">,</span> <span class="n">TABLE_VECTOR_SIZE</span><span class="p">,</span> <span class="n">table_embeddings</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stores table embeddings and metadata in a Qdrant collection.</span>
+
+<span class="sd">    This function creates a Qdrant collection for table data (or replaces it if it already exists),</span>
+<span class="sd">    then uploads the table embeddings along with their IDs and associated text content.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        client (QdrantClient): The Qdrant client instance.</span>
+<span class="sd">        TABLE_COLLECTION (str): Name of the Qdrant collection to store table embeddings.</span>
+<span class="sd">        TABLE_VECTOR_SIZE (int): Dimensionality of the table embedding vectors.</span>
+<span class="sd">        table_embeddings (list of dict): List of dictionaries containing:</span>
+<span class="sd">            - &quot;table_id&quot; (int): Unique identifier for each table.</span>
+<span class="sd">            - &quot;embedding&quot; (list or np.array): Embedding vector of the table.</span>
+<span class="sd">            - &quot;text&quot; (str): Text representation of the table for metadata/reference.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">create_collection</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">TABLE_COLLECTION</span><span class="p">,</span> <span class="n">TABLE_VECTOR_SIZE</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">upload_collection</span><span class="p">(</span>
+        <span class="n">collection_name</span><span class="o">=</span><span class="n">TABLE_COLLECTION</span><span class="p">,</span>
+        <span class="n">vectors</span><span class="o">=</span><span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;embedding&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">table_embeddings</span><span class="p">],</span>
+        <span class="n">ids</span><span class="o">=</span><span class="p">[</span><span class="n">table</span><span class="p">[</span><span class="s2">&quot;table_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">table_embeddings</span><span class="p">],</span>
+        <span class="n">payload</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;table_text&quot;</span><span class="p">:</span> <span class="n">table</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">table_embeddings</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Table embeddings stored in Qdrant successfully!&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Kenil Patwa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
