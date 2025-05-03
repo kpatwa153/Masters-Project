@@ -151,7 +151,7 @@ content = {
 - Loads and cleans audio/transcripts  
 - Splits into ≤30 s segments  
 - Prepares log‑Mel features & token labels  
-- Trains with `Seq2SeqTrainer`, monitors WER, saves best model (`whisper-small-eng-v2`)  
+- Trains with `Seq2SeqTrainer`, monitors WER, saves best model (`whisper-small-eng`)  
 
 ### D. Audio Transcription & Translation (`transcribe.py`)  
 - **split_audio:** 10 % overlap chunking  
