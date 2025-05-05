@@ -30,19 +30,19 @@ This solution streamlines clinical workflows, breaks language barriers, and prov
 
 ### 1. Medical ASR Transcription  
 Converts spoken medical conversations into accurate text.  
-- **Fine‑Tuned Whisper:** Adapted on a medical audio dataset (30 s segments) to reduce WER on domain‑specific terms citeturn0file2.  
-- **Chunking Pipeline:** Audio is split with 10 % overlap to preserve context, then transcribed via `transcribe.py` citeturn0file6.  
+- **Fine‑Tuned Whisper:** Adapted on a medical audio dataset (30 s segments) to reduce WER on domain‑specific terms  
+- **Chunking Pipeline:** Audio is split with 10 % overlap to preserve context, then transcribed via `transcribe.py` 
 - **Benefit:** Up to 30 % WER reduction on medical jargon; faster, more reliable charting.
 
 ### 2. Document & Audio Summarization  
 Automatically condenses text or speech into high‑level overviews.  
-- **Prompt Templates:** Custom LangChain prompts (`pdf_summarization`, `audio_summarization`) ensure focus on essential facts without hallucination citeturn0file4.  
+- **Prompt Templates:** Custom LangChain prompts (`pdf_summarization`, `audio_summarization`) ensure focus on essential facts without hallucination.
 - **Merged Summaries:** Combines chunk‑level summaries into a cohesive narrative.  
 - **Benefit:** Saves clinicians significant reading time and highlights key insights.
 
 ### 3. Layout‑Preserving Multilingual Translation  
 Translates PDFs and audio transcripts while keeping original formatting.  
-- **PDFs:** Pages scaled (default 1.2×) to fit translated text, overlaid with white blocks, and replaced by HTML blocks under Optional Content Groups citeturn0file7.  
+- **PDFs:** Pages scaled (default 1.2×) to fit translated text, overlaid with white blocks, and replaced by HTML blocks under Optional Content Groups.  
 - **Audio:** Line‑numbered translated transcripts via Deep Translator.  
 - **Benefit:** Maintains the integrity of medical forms, prescriptions, and reports.
 
@@ -57,7 +57,7 @@ Enables efficient similarity search across text, images, and tables.
   - Text → BGE (768‑dim)  
   - Images → CLIP (512‑dim) citeturn0file1  
   - Tables → formatted text → embeddings  
-- **Storage:** Qdrant collections with rich metadata (`filename`, pixels, table_text) citeturn0file5.  
+- **Storage:** Qdrant collections with rich metadata (`filename`, pixels, table_text)  
 - **Benefit:** Sub‑second retrieval for large datasets; unified multimodal search.
 
 ### 6. Streamlit Web UI  
@@ -67,7 +67,7 @@ User-friendly interface orchestrating the entire pipeline.
   - 🌐 Translate  
   - 📝 Summarize  
   - 🔄 Restart  
-- **Chat Interface:** Free‑form queries invoke RAG & response generation citeturn0file3.  
+- **Chat Interface:** Free‑form queries invoke RAG & response generation.  
 - **Benefit:** No‑code access for non‑technical users; real‑time feedback.
 
 ---
