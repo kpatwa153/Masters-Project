@@ -213,10 +213,11 @@ Download the medical audio dataset from Kaggle and place under `../audio_recordi
 ```bash
 python fine-tune-whisper.py
 ```
-Generates `./whisper-small-eng-v2` with model & processor.
+Generates `./whisper-small-eng` with model & processor.
 
 ### Launch Streamlit UI
 ```bash
+cd Modules
 streamlit run main.py
 ```
 - Upload PDF/MP3  
